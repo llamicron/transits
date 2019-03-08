@@ -15,6 +15,7 @@ pub struct Runner {
 impl Runner {
     pub fn new(cmd: &str, infile: &str, outdir: &str) -> Runner {
         // make sure file and dir exists
+        let cmd = if cmd.contains("vartools") { cmd } else { "" };
         Runner {
             cmd: cmd.to_string(),
             infile: infile.to_string(),

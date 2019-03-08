@@ -8,6 +8,7 @@ pub struct Runner {
     pub infile: String,
     pub outdir: String,
     pub stdout: String,
+    pub stderr: String,
     pub success: bool
 }
 
@@ -19,6 +20,7 @@ impl Runner {
             infile: infile.to_string(),
             outdir: outdir.to_string(),
             stdout: "".to_string(),
+            stderr: "".to_string(),
             success: false
         }
     }
@@ -37,9 +39,12 @@ impl Runner {
                     .expect("failed to execute process")
         };
         self.stdout = String::from_utf8_lossy(&output.stdout).to_string();
-        println!("{}", self.stdout);
-        self.success = output.status.success();
-        true
+        self.stderr = String::from_utf8_lossy(&output.stderr).to_string();
+        self.success = true;
+        if self.stderr.len() > 0 {
+            self.success = false;
+        }
+        self.success
     }
 }
 

@@ -3,6 +3,7 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
 extern crate serde_derive;
+extern crate glob;
 
 use rocket_contrib::json::{Json, JsonValue};
 use serde_derive::{Deserialize, Serialize};
@@ -12,17 +13,15 @@ use runner::Runner;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Payload {
-    cmd: String,
-    infile: String,
-    outdir: String
+    cmd: String
 }
 
 #[post("/json", format = "application/json", data = "<payload>")]
 fn handle_json(payload: Json<Payload>) -> JsonValue {
     let payload = payload.0;
-    let mut r = Runner::new(&payload.cmd, &payload.infile, &payload.outdir);
+    let mut r = Runner::new(&payload.cmd);
     r.run();
-    println!("{:?}", r);
+    println!("{}", r);
     json!(r)
 }
 

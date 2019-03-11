@@ -1,4 +1,4 @@
-FROM rust:1.31
+FROM shepmaster/rust-nightly
 WORKDIR /usr/src/api
 COPY . .
 

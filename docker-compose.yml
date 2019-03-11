@@ -1,3 +1,10 @@
 version: '3'
 
-# services:
+services:
+  api:
+    build: api/
+    ports:
+      - 8000:8000
+    volumes:
+      ./api/data/in/:/usr/src/api/data/in
+      ./api/data/out/:/usr/src/api/data/out

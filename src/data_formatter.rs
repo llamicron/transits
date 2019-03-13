@@ -1,22 +1,42 @@
+/*
+ * This module is responsible for reformatting a data file
+ * into a format that vartools can use. The format taken in is:
+ *
+ * starname,mjd,mag,error,mjd,mag,error,mjd,mag,error...
+ * starname,mjd,mag,error,mjd,mag,error,mjd,mag,error...
+ * starname,mjd,mag,error,mjd,mag,error,mjd,mag,error...
+ * ...
+ *
+ * The starname is the first field in a line of CSV. The remaining fields are triplets of
+ * modified julian date (mjd), magnitude (mag), and error. All data for one star is on one line
+ * of the csv file. The number of fields in each line (*excluding* the starname) must be divisible
+ * by 3, ie. none of the fields above can be missing.
+ *
+ * File can be comma delimited or space delimited
+*/
+
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::io::Error;
 
+const FILE_EXTENSION: &'static str = "transit";
+
 #[derive(Debug)]
 pub struct DataFormatter {
-    pub infile: &'static str
+    pub infile: PathBuf
 }
 
 // Methods
 impl DataFormatter {
     /// Rewrites data from infile to outdir
+    /// takes a string of the relative or absolute path of the output directory
     /// Returns a vector of files written
-    pub fn reformat_to(&self, outdir: &str) -> Result<Vec<PathBuf>, &str> {
-        if !Path::new(outdir).is_dir() {
-            return Err("outdir doesn't exist");
-        }
+    pub fn reformat_to(&self, outpath: &mut PathBuf) -> Result<Vec<PathBuf>, &str> {
 
-        let mut files_written = vec![];
+        outpath.push(&self.infile.file_stem().unwrap());
+        fs::create_dir_all(&outpath);
+
+        let mut files_written: Vec<PathBuf> = vec![];
 
         let contents = fs::read_to_string(&self.infile).expect("File could not be read");
 
@@ -47,30 +67,44 @@ impl DataFormatter {
                 i += 3;
             }
 
-            let mut path = PathBuf::new();
-            path.push(outdir);
+            let mut filepath = PathBuf::new();
+            filepath.push(&outpath);
+            filepath.push(starname);
+            filepath.set_extension(FILE_EXTENSION);
 
-            let mut given_path = PathBuf::new();
-            given_path.push(self.infile);
-            path.push(&given_path.file_stem().unwrap());
-
-            fs::create_dir_all(&path);
-
-            path.push(format!("{}.transit", starname));
-
-            fs::write(&path, &to_write).expect("Couldn't write to file");
-            files_written.push(path);
+            println!("File {} written to disk", fs::canonicalize(&filepath).unwrap().display());
+            fs::write(&filepath, &to_write).expect("Couldn't write to file");
+            files_written.push(filepath);
         }
 
+        self.write_index_file(&files_written, &outpath);
+
         Ok(files_written)
+    }
+
+    fn write_index_file(&self, files: &Vec<PathBuf>, outdir: &PathBuf){
+        let mut index_content = String::new();
+        for file in files {
+            index_content.push_str(file.file_name().unwrap().to_str().unwrap());
+            index_content.push_str("\n");
+        }
+
+        let mut index_file = PathBuf::new();
+        index_file.push(&outdir);
+        index_file.push("lc_list");
+        println!("Writing index file {}/lc_list", fs::canonicalize(&index_file).unwrap().display());
+        fs::write(&index_file, &index_content);
     }
 }
 
 // Associated functions
 impl DataFormatter {
+    /// Takes a string of an absolute or relative path to the input
     pub fn new(infile: &'static str) -> Result<DataFormatter, &str> {
+        let mut inputfile = PathBuf::new();
+        inputfile.push(infile);
         let formatter = DataFormatter {
-            infile
+            infile: inputfile
         };
 
         if Path::new(infile).is_file() {
@@ -96,7 +130,10 @@ mod tests {
 
     #[test]
     fn it_will_succeed_on_a_real_file() {
-        DataFormatter::new("./src/testdata/in/1.transit").expect("Could not find file");
+        let f = DataFormatter::new("./src/testdata/in/1.transit").expect("Could not find file");
+        let mut outdir = PathBuf::new();
+        outdir.push("./src/testdata/out/");
+        f.reformat_to(&mut outdir);
     }
 
     #[test]

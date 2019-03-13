@@ -14,6 +14,8 @@ mod data_formatter;
 mod runner;
 use runner::Runner;
 
+use std::path::PathBuf;
+
 use rocket_contrib::json::{Json, JsonValue};
 use serde_derive::{Deserialize, Serialize};
 use data_formatter::DataFormatter;
@@ -50,6 +52,9 @@ fn rocket() -> rocket::Rocket {
 fn main() {
     // rocket().launch();
     let f = DataFormatter::new("./src/testdata/in/example.txt").expect("Couldnt find file");
-    let result = f.reformat_to("./src/testdata/out/").expect("Something went wrong");
-    println!("{:?}", result);
+
+    let mut outdir = PathBuf::new();
+    outdir.push("./src/testdata/out/");
+
+    let result = f.reformat_to(&mut outdir).expect("Something went wrong");
 }

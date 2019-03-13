@@ -29,10 +29,6 @@ impl Runner {
         }
     }
 
-    // pub fn list_files<'a>(&self, path: Path) -> io::Result<Vec<Path>> {
-    //     let mut path = env::current_dir().expect("Can't access current directory");
-    // }
-
     pub fn run(&mut self) -> bool {
         let output = if cfg!(target_os = "windows") {
             Command::new("cmd")
@@ -88,10 +84,4 @@ mod tests {
         assert_eq!(result.stdout, "");
         assert_eq!(result.stderr, "");
     }
-
-    // #[test]
-    // fn test_list_files() {
-    //     let mut r = Runner::new("vartools -h");
-    //     println!("{:?}", r.list_files("data/in/"));
-    // }
 }

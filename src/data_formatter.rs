@@ -70,7 +70,7 @@ impl DataFormatter {
             let mut filepath = PathBuf::new();
             filepath.push(&outpath);
             filepath.push(starname);
-            filepath.set_extension(FILE_EXTENSION);
+            filepath.set_extension(&FILE_EXTENSION);
 
             println!("File {} written to disk", fs::canonicalize(&filepath).unwrap().display());
             fs::write(&filepath, &to_write).expect("Couldn't write to file");

@@ -1,0 +1,9 @@
+starname1 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname2 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname3 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname4 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname5 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname6 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname7 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname8 data1 data2 data3 data4 data5 data6 data7 data8 data9
+starname9 data1 data2 data3 data4 data5 data6 data7 data8 data9

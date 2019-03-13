@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::io::Error;
 
 #[derive(Debug)]
@@ -9,8 +9,60 @@ pub struct DataFormatter {
 
 // Methods
 impl DataFormatter {
-    fn check_file(&self) -> bool {
-        Path::new(self.infile).is_file()
+    /// Rewrites data from infile to outdir
+    /// Returns a vector of files written
+    pub fn reformat_to(&self, outdir: &str) -> Result<Vec<PathBuf>, &str> {
+        if !Path::new(outdir).is_dir() {
+            return Err("outdir doesn't exist");
+        }
+
+        let mut files_written = vec![];
+
+        let contents = fs::read_to_string(&self.infile).expect("File could not be read");
+
+        // Each line gets written to it's own file
+        for line in contents.split("\n").collect::<Vec<&str>>() {
+            if line.len() <= 0 {
+                continue;
+            }
+
+            let mut split_ch = " ";
+            if line.contains(",") {
+                split_ch = ","
+            }
+
+            let mut stardata = line.split(&split_ch).collect::<Vec<&str>>();
+
+            let starname = stardata.remove(0);
+
+            if stardata.len() % 3 != 0 {
+                return Err("Error in data format, an uneven number of datapoints is present (not divisible by 3)");
+            }
+
+            let mut i = 0;
+            let mut to_write = String::new();
+            while i < stardata.len() {
+                let chunk = format!("{} {} {}\n", stardata[i], stardata[i + 1], stardata[i + 2]);
+                to_write.push_str(chunk.as_str());
+                i += 3;
+            }
+
+            let mut path = PathBuf::new();
+            path.push(outdir);
+
+            let mut given_path = PathBuf::new();
+            given_path.push(self.infile);
+            path.push(&given_path.file_stem().unwrap());
+
+            fs::create_dir_all(&path);
+
+            path.push(format!("{}.transit", starname));
+
+            fs::write(&path, &to_write).expect("Couldn't write to file");
+            files_written.push(path);
+        }
+
+        Ok(files_written)
     }
 }
 
@@ -21,7 +73,7 @@ impl DataFormatter {
             infile
         };
 
-        if formatter.check_file() {
+        if Path::new(infile).is_file() {
             return Ok(formatter);
         }
 

@@ -48,5 +48,8 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    rocket().launch();
+    // rocket().launch();
+    let f = DataFormatter::new("./src/testdata/in/example.txt").expect("Couldnt find file");
+    let result = f.reformat_to("./src/testdata/out/").expect("Something went wrong");
+    println!("{:?}", result);
 }

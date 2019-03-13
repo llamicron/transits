@@ -1,15 +1,23 @@
 #![feature(proc_macro_hygiene, decl_macro)]
+// Remove these for production
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
 extern crate serde_derive;
 extern crate glob;
 
-use rocket_contrib::json::{Json, JsonValue};
-use serde_derive::{Deserialize, Serialize};
-
+mod data_formatter;
 mod runner;
 use runner::Runner;
+
+use rocket_contrib::json::{Json, JsonValue};
+use serde_derive::{Deserialize, Serialize};
+use data_formatter::DataFormatter;
+
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Payload {

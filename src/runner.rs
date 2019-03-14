@@ -42,6 +42,7 @@ impl Runner {
                     .output()
                     .expect("failed to execute process")
         };
+
         self.stdout = String::from_utf8_lossy(&output.stdout).to_string();
         self.stderr = String::from_utf8_lossy(&output.stderr).to_string();
 

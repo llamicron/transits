@@ -1,20 +1,3 @@
-/*
- * This module is responsible for reformatting a data file
- * into a format that vartools can use. The format taken in is:
- *
- * starname,mjd,mag,error,mjd,mag,error,mjd,mag,error...
- * starname,mjd,mag,error,mjd,mag,error,mjd,mag,error...
- * starname,mjd,mag,error,mjd,mag,error,mjd,mag,error...
- * ...
- *
- * The starname is the first field in a line of CSV. The remaining fields are triplets of
- * modified julian date (mjd), magnitude (mag), and error. All data for one star is on one line
- * of the csv file. The number of fields in each line (*excluding* the starname) must be divisible
- * by 3, ie. none of the fields above can be missing.
- *
- * File can be comma delimited or space delimited
-*/
-
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::io::{Error, ErrorKind};
@@ -38,6 +21,10 @@ impl DataFormatter {
             Err(e) => return Err(e),
             Ok(_) => ()
         };
+
+        let mut vartools_path = PathBuf::from(&outpath);
+        vartools_path.push("vartools");
+        fs::create_dir_all(&vartools_path);
 
         let mut files_written: Vec<PathBuf> = vec![];
 
@@ -76,40 +63,43 @@ impl DataFormatter {
             filepath.push(starname);
             filepath.set_extension(&FILE_EXTENSION);
 
-            println!("File {} written to disk", fs::canonicalize(&filepath).unwrap().display());
+            // println!("File {} written to disk", fs::canonicalize(&filepath).unwrap().display());
             fs::write(&filepath, &to_write)?;
             files_written.push(filepath);
         }
 
-        self.write_index_file(&outpath, &files_written);
+        let index_path = self.write_index_file(&outpath, &files_written).unwrap();
+        files_written.push(index_path);
 
         Ok(files_written)
     }
 
-    fn write_index_file(&self, outdir: &PathBuf, files: &Vec<PathBuf>){
+    fn write_index_file(&self, outdir: &PathBuf, files: &Vec<PathBuf>) -> Result<PathBuf, Error> {
         let mut index_content = String::new();
         for file in files {
-            index_content.push_str(file.file_name().unwrap().to_str().unwrap());
+            let mut full_path = fs::canonicalize(file).unwrap();
+            index_content.push_str(full_path.to_str().unwrap());
             index_content.push_str("\n");
         }
 
-        let mut index_file = PathBuf::new();
-        index_file.push(&outdir);
-        index_file.push("lc_list");
-        match fs::canonicalize(&index_file) {
-            Ok(x) => {
+        let mut base_path = PathBuf::from(&outdir);
+        match fs::canonicalize(&base_path) {
+            Ok(mut x) => {
+                x.push("lc_list");
                 println!("File {} written to disk (index)", &x.display());
                 fs::write(&x, &index_content).expect("Could not write to file");
+                Ok(x)
             },
-            Err(e) => panic!("Could not write index file!")
+            Err(e) => Err(e)
         }
+
     }
 }
 
 // Associated functions
 impl DataFormatter {
     /// Takes a string of an absolute or relative path to the input
-    pub fn new(infile: &'static str) -> Result<DataFormatter, Error> {
+    pub fn new(infile: &str) -> Result<DataFormatter, Error> {
         let mut inputfile = PathBuf::new();
         inputfile.push(infile);
 
@@ -119,7 +109,7 @@ impl DataFormatter {
             });
         }
 
-        Err(Error::new(ErrorKind::Other, "File check failed. Make sure file exists"))
+        Err(Error::new(ErrorKind::NotFound, "File check failed. Make sure file exists"))
     }
 }
 

@@ -15,24 +15,60 @@ mod runner;
 use runner::Runner;
 
 use std::path::PathBuf;
+use std::fs;
 
 use rocket_contrib::json::{Json, JsonValue};
 use serde_derive::{Deserialize, Serialize};
 use data_formatter::DataFormatter;
 
 
-#[derive(Debug, Serialize, Deserialize)]
-struct Payload {
-    cmd: String
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct VartoolsPayload {
+    cmd: String,
+    infile: String
 }
 
-#[post("/json", format = "application/json", data = "<payload>")]
-fn handle_json(payload: Json<Payload>) -> JsonValue {
-    let payload = payload.0;
+#[post("/vartools", format = "application/json", data = "<payload>")]
+fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
+    let payload = payload;
+
+    let mut outdir = PathBuf::from(&payload.infile);
+    outdir = match outdir.parent() {
+        Some(path) => PathBuf::from(path),
+        None => outdir
+    };
+
+    let df = match DataFormatter::new(&payload.infile) {
+        Ok(x) => x,
+        Err(e) => {
+            return json!({
+                "status": "error",
+                "reason": format!("{}", e)
+            });
+        }
+    };
+
+
+    let files_written = match df.reformat_to(&mut outdir) {
+        Ok(x) => x,
+        Err(e) => return json!({
+            "status": "error",
+            "reason": format!("{}", e)
+        })
+    };
+
     let mut r = Runner::new(&payload.cmd);
     r.run();
-    println!("{}", r);
-    json!(r)
+
+    let mut vartools_stdout_file = PathBuf::from(&outdir);
+    vartools_stdout_file.push("vartools/parameters.txt");
+    fs::write(vartools_stdout_file, format!("{}", r));
+
+    json!({
+        "status": "ok",
+        "vartools": format!("{}", r),
+        "files_written": files_written
+    })
 }
 
 #[catch(404)]
@@ -50,11 +86,10 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    // rocket().launch();
-    let f = DataFormatter::new("./src/testdata/in/example.dat").expect("Couldnt find file");
+    rocket().launch();
+    // let mut outdir = PathBuf::new();
+    // outdir.push("/Users/llamicron/code/transits/src/testdata/out");
 
-    let mut outdir = PathBuf::new();
-    outdir.push("./src/testdata/out/");
-
-    let result = f.reformat_to(&mut outdir).expect("Something went wrong");
+    // let df = DataFormatter::new("/Users/llamicron/code/transits/src/testdata/in/example.dat").expect("Something went wrong");
+    // df.reformat_to(&mut outdir);
 }

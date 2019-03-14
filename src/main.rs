@@ -79,7 +79,7 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    // rocket().launch();
-    let df = DataFormatter::new("/Users/llamicron/Desktop/october.dat").expect("fuck");
-    df.reformat();
+    rocket().launch();
+    // let df = DataFormatter::new("/Users/llamicron/Desktop/october.dat").expect("fuck");
+    // df.reformat();
 }

@@ -51,7 +51,7 @@ fn rocket() -> rocket::Rocket {
 
 fn main() {
     // rocket().launch();
-    let f = DataFormatter::new("./src/testdata/in/example.txt").expect("Couldnt find file");
+    let f = DataFormatter::new("./src/testdata/in/example.dat").expect("Couldnt find file");
 
     let mut outdir = PathBuf::new();
     outdir.push("./src/testdata/out/");

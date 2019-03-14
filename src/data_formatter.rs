@@ -17,7 +17,7 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::io::Error;
+use std::io::{Error, ErrorKind};
 
 const FILE_EXTENSION: &'static str = "transit";
 
@@ -31,10 +31,13 @@ impl DataFormatter {
     /// Rewrites data from infile to outdir
     /// takes a string of the relative or absolute path of the output directory
     /// Returns a vector of files written
-    pub fn reformat_to(&self, outpath: &mut PathBuf) -> Result<Vec<PathBuf>, &str> {
+    pub fn reformat_to(&self, outpath: &mut PathBuf) -> Result<Vec<PathBuf>, Error> {
 
         outpath.push(&self.infile.file_stem().unwrap());
-        fs::create_dir_all(&outpath);
+        match fs::create_dir_all(&outpath) {
+            Err(e) => return Err(e),
+            Ok(_) => ()
+        };
 
         let mut files_written: Vec<PathBuf> = vec![];
 
@@ -56,7 +59,8 @@ impl DataFormatter {
             let starname = stardata.remove(0);
 
             if stardata.len() % 3 != 0 {
-                return Err("Error in data format, an uneven number of datapoints is present (not divisible by 3)");
+                // TODO test this
+                return Err(Error::new(ErrorKind::Other, "Error in data format, an uneven number of datapoints is present (not divisible by 3)"));
             }
 
             let mut i = 0;
@@ -73,16 +77,16 @@ impl DataFormatter {
             filepath.set_extension(&FILE_EXTENSION);
 
             println!("File {} written to disk", fs::canonicalize(&filepath).unwrap().display());
-            fs::write(&filepath, &to_write).expect("Couldn't write to file");
+            fs::write(&filepath, &to_write)?;
             files_written.push(filepath);
         }
 
-        self.write_index_file(&files_written, &outpath);
+        self.write_index_file(&outpath, &files_written);
 
         Ok(files_written)
     }
 
-    fn write_index_file(&self, files: &Vec<PathBuf>, outdir: &PathBuf){
+    fn write_index_file(&self, outdir: &PathBuf, files: &Vec<PathBuf>){
         let mut index_content = String::new();
         for file in files {
             index_content.push_str(file.file_name().unwrap().to_str().unwrap());
@@ -92,26 +96,30 @@ impl DataFormatter {
         let mut index_file = PathBuf::new();
         index_file.push(&outdir);
         index_file.push("lc_list");
-        println!("Writing index file {}/lc_list", fs::canonicalize(&index_file).unwrap().display());
-        fs::write(&index_file, &index_content);
+        match fs::canonicalize(&index_file) {
+            Ok(x) => {
+                println!("File {} written to disk (index)", &x.display());
+                fs::write(&x, &index_content).expect("Could not write to file");
+            },
+            Err(e) => panic!("Could not write index file!")
+        }
     }
 }
 
 // Associated functions
 impl DataFormatter {
     /// Takes a string of an absolute or relative path to the input
-    pub fn new(infile: &'static str) -> Result<DataFormatter, &str> {
+    pub fn new(infile: &'static str) -> Result<DataFormatter, Error> {
         let mut inputfile = PathBuf::new();
         inputfile.push(infile);
-        let formatter = DataFormatter {
-            infile: inputfile
-        };
 
         if Path::new(infile).is_file() {
-            return Ok(formatter);
+            return Ok(DataFormatter {
+                infile: inputfile
+            });
         }
 
-        Err("File check failed, make sure the file exists and the path is correct")
+        Err(Error::new(ErrorKind::Other, "File check failed. Make sure file exists"))
     }
 }
 
@@ -130,10 +138,15 @@ mod tests {
 
     #[test]
     fn it_will_succeed_on_a_real_file() {
-        let f = DataFormatter::new("./src/testdata/in/1.transit").expect("Could not find file");
+        let f = DataFormatter::new("./src/testdata/in/example.dat").expect("Couldnt find file");
         let mut outdir = PathBuf::new();
         outdir.push("./src/testdata/out/");
-        f.reformat_to(&mut outdir);
+        match f.reformat_to(&mut outdir) {
+            Ok(_) => println!("Reformatting complete"),
+            Err(_) => assert!(false)
+        };
+
+        assert!(Path::new("./src/testdata/out/example").is_dir());
     }
 
     #[test]

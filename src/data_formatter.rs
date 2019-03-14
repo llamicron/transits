@@ -19,7 +19,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::io::{Error, ErrorKind};
 
-const FILE_EXTENSION: &'static str = "transit";
+const FILE_EXTENSION: &'static str = "obs";
 
 #[derive(Debug)]
 pub struct DataFormatter {

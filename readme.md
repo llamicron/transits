@@ -1,2 +1,0 @@
-# Transits
-vartools pipeline

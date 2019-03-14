@@ -1,7 +1,3 @@
-Makefile
-env/
-__pycache__
-*.pyc
-**/target/
-.DS_Store
-doc/
+_site
+.sass-cache
+.jekyll-metadata

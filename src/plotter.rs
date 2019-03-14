@@ -1,19 +1,35 @@
+use std::fmt;
 use std::fs;
 use std::path::PathBuf;
-use gnuplot::{Figure, Caption, Color};
+use gnuplot::{Figure, Caption, Color, LegendOption, LabelOption, AlignType, Coordinate};
 
 pub enum DataPoint {
     MJD,
     MagObs,
     MagModel,
     Error,
-    Phase
+    Phase,
 }
 
-pub fn plot_model(file: &PathBuf, x: DataPoint, y: DataPoint) {
-    if !file.exists() {
-        // quit
+impl fmt::Display for DataPoint {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+       match *self {
+           DataPoint::MJD      => write!(f, "MJD"),
+           DataPoint::MagObs   => write!(f, "MagObs"),
+           DataPoint::MagModel => write!(f, "MagModel"),
+           DataPoint::Error    => write!(f, "Error"),
+           DataPoint::Phase    => write!(f, "Phase"),
+       }
     }
+}
+
+pub fn plot_by(infile: &str, outfile: &str, x: DataPoint, y: DataPoint) {
+    let file = PathBuf::from(infile);
+
+    if !file.exists() {
+        panic!("File does not exist!")
+    }
+
     let mut xs: Vec<f64> = Vec::new();
     let mut ys: Vec<f64> = Vec::new();
 
@@ -47,8 +63,12 @@ pub fn plot_model(file: &PathBuf, x: DataPoint, y: DataPoint) {
 
     }
     let mut fg = Figure::new();
-    // fg.set_terminal("pngcairo", "/Users/llamicron/Desktop/test.png");
-    fg.axes2d().points(xs, ys, &[Caption("MJD by Mag_obs"), Color("black")]);
+
+    if outfile.len() > 0 {
+        let out_path = PathBuf::from(outfile);
+        fg.set_terminal("pngcairo", &out_path.to_str().unwrap());
+    }
+    fg.axes2d().points(xs, ys, &[Caption(&format!("{} (x) by {} (y)", x, y)), Color("black")]);
     fg.show();
 }
 

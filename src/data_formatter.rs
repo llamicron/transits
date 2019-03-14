@@ -6,7 +6,8 @@ const FILE_EXTENSION: &'static str = "obs";
 
 #[derive(Debug)]
 pub struct DataFormatter {
-    pub infile: PathBuf
+    pub infile: PathBuf,
+    pub path: PathBuf
 }
 
 // Methods
@@ -14,17 +15,17 @@ impl DataFormatter {
     /// Rewrites data from infile to outdir
     /// takes a string of the relative or absolute path of the output directory
     /// Returns a vector of files written
-    pub fn reformat_to(&self, outpath: &mut PathBuf) -> Result<Vec<PathBuf>, Error> {
+    pub fn reformat(&self) -> bool {
 
-        outpath.push(&self.infile.file_stem().unwrap());
-        match fs::create_dir_all(&outpath) {
-            Err(e) => return Err(e),
+        match fs::create_dir_all(&self.formatted_path()) {
+            Err(e) => return false,
             Ok(_) => ()
         };
 
-        let mut vartools_path = PathBuf::from(&outpath);
-        vartools_path.push("vartools");
-        fs::create_dir_all(&vartools_path);
+        match fs::create_dir_all(&self.vartools_path()) {
+            Err(e) => return false,
+            Ok(_) => ()
+        };
 
         let mut files_written: Vec<PathBuf> = vec![];
 
@@ -47,7 +48,8 @@ impl DataFormatter {
 
             if stardata.len() % 3 != 0 {
                 // TODO test this
-                return Err(Error::new(ErrorKind::Other, "Error in data format, an uneven number of datapoints is present (not divisible by 3)"));
+                println!("Star data not divisible by 3");
+                return false;
             }
 
             let mut i = 0;
@@ -58,41 +60,40 @@ impl DataFormatter {
                 i += 3;
             }
 
-            let mut filepath = PathBuf::new();
-            filepath.push(&outpath);
-            filepath.push(starname);
-            filepath.set_extension(&FILE_EXTENSION);
-
-            // println!("File {} written to disk", fs::canonicalize(&filepath).unwrap().display());
-            fs::write(&filepath, &to_write)?;
-            files_written.push(filepath);
+            fs::write(format!("{}/{}.{}", &self.formatted_path().display(), &starname, &FILE_EXTENSION), &to_write).expect("Couldnt write to file");
         }
 
-        let index_path = self.write_index_file(&outpath, &files_written).unwrap();
-        files_written.push(index_path);
-
-        Ok(files_written)
+        self.write_index_file();
+        true
     }
 
-    fn write_index_file(&self, outdir: &PathBuf, files: &Vec<PathBuf>) -> Result<PathBuf, Error> {
+    fn write_index_file(&self) -> bool {
         let mut index_content = String::new();
-        for file in files {
-            let mut full_path = fs::canonicalize(file).unwrap();
-            index_content.push_str(full_path.to_str().unwrap());
+
+        for entry in fs::read_dir(&self.formatted_path()).unwrap() {
+            let file = entry.unwrap();
+            index_content.push_str(file.path().to_str().unwrap());
             index_content.push_str("\n");
-        }
 
-        let mut base_path = PathBuf::from(&outdir);
-        match fs::canonicalize(&base_path) {
-            Ok(mut x) => {
-                x.push("lc_list");
-                println!("File {} written to disk (index)", &x.display());
-                fs::write(&x, &index_content).expect("Could not write to file");
-                Ok(x)
-            },
-            Err(e) => Err(e)
         }
+        match fs::write(format!("{}/lc_list", &self.formatted_path().display()), &index_content) {
+            Ok(_) => true,
+            Err(_) => false
+        }
+    }
 
+    // path/formatted_input/
+    pub fn formatted_path(&self) -> PathBuf {
+        let mut fp = PathBuf::from(&self.path);
+        fp.push("formatted_input");
+        fp
+    }
+
+    // path/vartools/
+    pub fn vartools_path(&self) -> PathBuf {
+        let mut vp = PathBuf::from(&self.path);
+        vp.push("vartools");
+        vp
     }
 }
 
@@ -100,13 +101,20 @@ impl DataFormatter {
 impl DataFormatter {
     /// Takes a string of an absolute or relative path to the input
     pub fn new(infile: &str) -> Result<DataFormatter, Error> {
-        let mut inputfile = PathBuf::new();
-        inputfile.push(infile);
+        // /some/dir/october.dat
+        let inputfile = PathBuf::from(infile);
 
-        if Path::new(infile).is_file() {
-            return Ok(DataFormatter {
-                infile: inputfile
-            });
+        // /some/dir/october/
+        let mut path = PathBuf::from(&infile).parent().unwrap().to_owned();
+        path.push(&inputfile.file_stem().unwrap());
+
+
+        if inputfile.exists() {
+            let df = DataFormatter {
+                infile: inputfile,
+                path
+            };
+            return Ok(df);
         }
 
         Err(Error::new(ErrorKind::NotFound, "File check failed. Make sure file exists"))
@@ -131,7 +139,7 @@ mod tests {
         let f = DataFormatter::new("./src/testdata/in/example.dat").expect("Couldnt find file");
         let mut outdir = PathBuf::new();
         outdir.push("./src/testdata/out/");
-        match f.reformat_to(&mut outdir) {
+        match f.reformat(&mut outdir) {
             Ok(_) => println!("Reformatting complete"),
             Err(_) => assert!(false)
         };

@@ -15,6 +15,7 @@ mod data_formatter;
 mod runner;
 mod plotter;
 
+use plotter::DataPoint;
 use runner::Runner;
 
 use std::path::PathBuf;
@@ -36,11 +37,6 @@ struct VartoolsPayload {
 fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
     let payload = payload;
 
-    let mut outdir = PathBuf::from(&payload.infile);
-    outdir = match outdir.parent() {
-        Some(path) => PathBuf::from(path),
-        None => outdir
-    };
 
     let df = match DataFormatter::new(&payload.infile) {
         Ok(x) => x,
@@ -53,25 +49,18 @@ fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
     };
 
 
-    let files_written = match df.reformat_to(&mut outdir) {
-        Ok(x) => x,
-        Err(e) => return json!({
-            "status": "error",
-            "reason": format!("{}", e)
-        })
-    };
+    df.reformat();
 
     let mut r = Runner::new(&payload.cmd);
     r.run();
 
-    let mut vartools_stdout_file = PathBuf::from(&outdir);
-    vartools_stdout_file.push("vartools/parameters.txt");
-    fs::write(vartools_stdout_file, format!("{}", r));
+    let mut vartools_stdout_file = PathBuf::from(df.vartools_path());
+    vartools_stdout_file.push("parameters.txt");
+    fs::write(vartools_stdout_file, format!("{}", r)).expect("Couldnt write to file");
 
     json!({
         "status": "ok",
         "vartools": format!("{}", r),
-        "files_written": files_written
     })
 }
 
@@ -91,7 +80,6 @@ fn rocket() -> rocket::Rocket {
 
 fn main() {
     // rocket().launch();
-    use plotter::DataPoint;
-    let file = PathBuf::from("./src/testdata/out/examplestar.obs.bls.model");
-    plotter::plot_model(&file, DataPoint::MJD, DataPoint::MagObs);
+    let df = DataFormatter::new("/Users/llamicron/Desktop/october.dat").expect("fuck");
+    df.reformat();
 }

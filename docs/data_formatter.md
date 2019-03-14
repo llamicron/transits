@@ -7,6 +7,9 @@ title: DataFormatter
 
 The `DataFormatter` module is responsible for translating given data to a format that vartools can read.
 
+## Paths
+A directory will be created with the file stem of the data file passed in. Two subdirectories will be created: `vartools` and `formatted_input`. The `vartools` directory will contains vartools output and plot images. `formatted_input` will contain the input files, reformatted to work with vartools
+
 ## Input
 The given data format is as follows:
 

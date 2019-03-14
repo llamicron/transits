@@ -7,11 +7,14 @@
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
+extern crate gnuplot;
 extern crate serde_derive;
 extern crate glob;
 
 mod data_formatter;
 mod runner;
+mod plotter;
+
 use runner::Runner;
 
 use std::path::PathBuf;
@@ -21,6 +24,7 @@ use rocket_contrib::json::{Json, JsonValue};
 use serde_derive::{Deserialize, Serialize};
 use data_formatter::DataFormatter;
 
+use gnuplot::{Figure, Caption, Color};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct VartoolsPayload {
@@ -86,10 +90,8 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    rocket().launch();
-    // let mut outdir = PathBuf::new();
-    // outdir.push("/Users/llamicron/code/transits/src/testdata/out");
-
-    // let df = DataFormatter::new("/Users/llamicron/code/transits/src/testdata/in/example.dat").expect("Something went wrong");
-    // df.reformat_to(&mut outdir);
+    // rocket().launch();
+    use plotter::DataPoint;
+    let file = PathBuf::from("./src/testdata/out/examplestar.obs.bls.model");
+    plotter::plot_model(&file, DataPoint::MJD, DataPoint::MagObs);
 }

@@ -5,6 +5,11 @@ let app = new Vue({
     inputFileFound: "",
     inputFile: "/Users/llamicron/Desktop/october.dat"
   },
+  watch: {
+    inputFile: function() {
+      this.testInputFileExists();
+    }
+  },
   methods: {
     isApiRunning() {
       const Http = new XMLHttpRequest();
@@ -35,9 +40,9 @@ let app = new Vue({
       xhr.onloadend = () => {
         result = JSON.parse(xhr.responseText);
         if (result.status == "ok" && result.file_exists) {
-          this.inputFileFound = "File exists";
+          this.inputFileFound = "✔️ File exists";
         } else {
-          this.inputFileFound = "File does not exist";
+          this.inputFileFound = "❌ File does not exist";
         }
       };
 

@@ -14,71 +14,30 @@
 </head>
 <body>
   <div id="app">
-    <!-- <div class="uk-container">
-      <ul class="uk-tab-top" uk-tab>
-        <li class="uk-active"><a href="#">Data</a></li>
-        <li><a href="#">Vartools</a></li>
-      </ul>
-    </div> -->
-
-    <!-- <nav class="uk-navbar-container" uk-navbar uk-switcher>
-      <div class="uk-navbar-left">
-
-        <ul class="uk-navbar-nav">
-          <li class="uk-active"><a href="#">Active</a></li>
-          <li>
-            <a href="#">Parent</a>
-            <div class="uk-navbar-dropdown">
-              <ul class="uk-nav uk-navbar-dropdown-nav">
-                <li class="uk-active"><a href="#">Active</a></li>
-                <li><a href="#">Item</a></li>
-                <li><a href="#">Item</a></li>
-              </ul>
-            </div>
-          </li>
-          <li><a href="#">Item</a></li>
-        </ul>
-
-      </div>
-    </nav> -->
-
-    <div class="uk-container uk-margin-top">
-      <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-        <li><a href="#">Data</a></li>
-        <li><a href="#">Vartools</a></li>
-      </ul>
-
-      <ul class="uk-switcher uk-margin">
-        <div>
-          <!-- Data Content -->
-          <h1>Input</h1>
-          <div uk-grid class="uk-child-width-1-2@s">
-            <div>
-              <!-- <p>
-                Enter the full path to your input file
-              </p> -->
-              <div class="uk-margin">
-                <input type="text" v-model="inputFile" class="uk-input" placeholder="Full Path to Input File">
-              </div>
-            </div>
-            <div>
-              <button @click="testInputFileExists" class="uk-button uk-button-primary" uk-tooltip="Tests if that file is found">Test</button>
-              {{ inputFileFound }}
+    <div class="uk-section uk-section-muted">
+      <div class="uk-container">
+        <!-- Data Content -->
+        <h1>INPUT</h1>
+        <div uk-grid class="uk-child-width-1-2@s">
+          <div>
+            <div class="uk-margin">
+              <input type="text" v-model="inputFile" class="uk-input" placeholder="Full Path to Input File">
             </div>
           </div>
+          <div>
+            <code>
+              {{ inputFileFound }}
+            </code>
+          </div>
+        </div>
 
-        </div>
-        <div>
-          <!-- Vartools Content -->
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </div>
-      </ul>
+      </div>
     </div>
-
-    <ul class="uk-switcher">
-      <div>Something here</div>
-      <div>Something different here</div>
-    </ul>
+    <div class="uk-section">
+      <div class="uk-container">
+        <h1>VARTOOLS</h1>
+      </div>
+    </div>
   </div>
 
   <script src="js/main.js"></script>

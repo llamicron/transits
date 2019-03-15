@@ -82,7 +82,6 @@ pub fn plot_all_models_at(path: &PathBuf) -> Result<Vec<String>, Error> {
 
     for entry in fs::read_dir(path).unwrap() {
         let file = PathBuf::from(entry?.path());
-        println!("{:?}", file.display());
 
         let extension = match file.extension() {
             Some(x) => x,

@@ -9,7 +9,7 @@ title:               Transits Documentation
 tagline:             'A VARTOOLS pipeline'
 description:         'A pipefile for <a target="_new" href="https://www.astro.princeton.edu/~jhartman/vartools.html">VARTOOLS</a>, the astronomical light curve program'
 url:                 https://github.com/llamicron/transits/
-production:          false
+production:          true
 # baseurl:             'https://llamicron.github.io/transits/'
 # paginate:            5
 

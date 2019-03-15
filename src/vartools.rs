@@ -10,18 +10,18 @@ use serde_derive::{Deserialize, Serialize};
 
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Runner {
+pub struct Vartools {
     pub cmd: String,
     pub stdout: String,
     pub stderr: String,
     pub success: bool
 }
 
-impl Runner {
-    pub fn new(cmd: &str) -> Runner {
+impl Vartools {
+    pub fn new(cmd: &str) -> Vartools {
         // make sure file and dir exists
         let cmd = if cmd.contains("vartools") { cmd } else { "" };
-        Runner {
+        Vartools {
             cmd: cmd.to_string(),
             stdout: "".to_string(),
             stderr: "".to_string(),
@@ -55,7 +55,7 @@ impl Runner {
     }
 }
 
-impl fmt::Display for Runner {
+impl fmt::Display for Vartools {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.stdout.len() > 0 {
             write!(f, "{}", self.stdout)
@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn test_a_command() {
-        let mut runner = Runner::new("vartools -help");
+        let mut runner = Vartools::new("vartools -help");
         runner.run();
         assert!(!runner.success);
         assert!(runner.stderr.contains("Usage: vartools"));
@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn test_that_it_wont_allow_not_a_vartools_command() {
-        let result = Runner::new("echo hello");
+        let result = Vartools::new("echo hello");
         assert_eq!(result.cmd, "");
         assert_eq!(result.stdout, "");
         assert_eq!(result.stderr, "");

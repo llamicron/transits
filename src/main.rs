@@ -12,11 +12,11 @@ extern crate serde_derive;
 extern crate glob;
 
 mod data_formatter;
-mod runner;
+mod vartools;
 mod plotter;
 
 use plotter::DataPoint;
-use runner::Runner;
+use vartools::Vartools;
 
 use std::path::PathBuf;
 use std::fs;
@@ -37,30 +37,24 @@ struct VartoolsPayload {
 fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
     let payload = payload;
 
-
     let df = match DataFormatter::new(&payload.infile) {
         Ok(x) => x,
-        Err(e) => {
-            return json!({
-                "status": "error",
-                "reason": format!("{}", e)
-            });
-        }
+        Err(e) => return json!({ "status": "error", "reason": format!("{}", e) }),
     };
 
 
     df.reformat();
 
-    let mut r = Runner::new(&payload.cmd);
-    r.run();
+    let mut vartools = Vartools::new(&payload.cmd);
+    vartools.run();
 
     let mut vartools_stdout_file = PathBuf::from(df.vartools_path());
     vartools_stdout_file.push("parameters.txt");
-    fs::write(vartools_stdout_file, format!("{}", r)).expect("Couldnt write to file");
+    fs::write(vartools_stdout_file, format!("{}", vartools)).expect("Couldnt write to file");
 
     json!({
         "status": "ok",
-        "vartools": format!("{}", r),
+        "vartools": format!("{}", vartools),
     })
 }
 
@@ -80,6 +74,4 @@ fn rocket() -> rocket::Rocket {
 
 fn main() {
     rocket().launch();
-    // let df = DataFormatter::new("/Users/llamicron/Desktop/october.dat").expect("fuck");
-    // df.reformat();
 }

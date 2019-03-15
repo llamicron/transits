@@ -35,6 +35,7 @@ struct VartoolsPayload {
 
 #[post("/vartools", format = "application/json", data = "<payload>")]
 fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
+    println!("Payload recieved.\n");
     let payload = payload;
 
     let df = match DataFormatter::new(&payload.infile) {
@@ -43,17 +44,28 @@ fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
     };
 
 
+    println!("Reformatting data...");
     df.reformat();
+    println!("Done.\n");
+
 
     let mut vartools = Vartools::new(&payload.cmd);
+    println!("Running Vartools... This could take some time...");
     vartools.run();
 
     let mut vartools_stdout_file = PathBuf::from(&df.vartools_path());
     vartools_stdout_file.push("parameters.txt");
     fs::write(vartools_stdout_file, format!("{}", vartools)).expect("Couldnt write to file");
+    println!("Done. Vartools output written, stdout written to parameters.txt\n");
 
-    plotter::plot_all_models_at(&df.vartools_path());
+    println!("Drawing plots...");
+    match plotter::plot_all_models_at(&df.vartools_path()) {
+        Ok(_) => (),
+        Err(e) => eprintln!("Error! Could not create one or more plot images"),
+    };
+    println!("Done.\n");
 
+    println!("All tasks done.\n");
     json!({
         "status": "ok",
         "vartools": format!("{}", vartools),

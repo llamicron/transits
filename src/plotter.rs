@@ -78,7 +78,7 @@ pub fn plot_by(infile: &str, outfile: &str, x: DataPoint, y: DataPoint) {
 pub fn plot_all_models_at(path: &PathBuf) -> Result<Vec<String>, Error> {
     let mut plots = Vec::new();
 
-    fs::create_dir(format!("{}/plots/", &path.display()));
+    fs::create_dir(format!("{}/plots/", &path.display()))?;
 
     for entry in fs::read_dir(path).unwrap() {
         let file = PathBuf::from(entry?.path());

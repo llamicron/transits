@@ -17,7 +17,8 @@ mod vartools;
 mod plotter;
 
 // Standard libs
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
+use std::collections::HashMap;
 use std::fs;
 
 // External libs
@@ -44,6 +45,15 @@ struct VartoolsPayload {
 fn running() -> JsonValue {
     json!({
         "status": "ok"
+    })
+}
+
+#[post("/file_exists", format = "application/json", data = "<payload>")]
+fn file_exists(payload: Json<HashMap<&str, &str>>) -> JsonValue {
+    println!("{:?}", payload.0);
+    json!({
+        "status": "ok",
+        "file_exists": PathBuf::from(payload.0["file_path"]).is_file()
     })
 }
 
@@ -97,7 +107,7 @@ fn not_found() -> JsonValue {
 fn rocket() -> rocket::Rocket {
     let cors = rocket_cors::CorsOptions::default().to_cors().expect("Could not create CORS defaults");
     rocket::ignite()
-        .mount("/api", routes![vartools, running])
+        .mount("/api", routes![vartools, running, file_exists])
         .attach(cors)
         .register(catchers![not_found])
 }

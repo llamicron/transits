@@ -1,6 +1,7 @@
 use std::fmt;
 use std::fs;
 use std::path::PathBuf;
+use std::io::Error;
 use gnuplot::{Figure, Caption, Color, LegendOption, LabelOption, AlignType, Coordinate};
 
 pub enum DataPoint {
@@ -72,3 +73,32 @@ pub fn plot_by(infile: &str, outfile: &str, x: DataPoint, y: DataPoint) {
     fg.show();
 }
 
+// Given a path, this will plot all .model files in that dir and
+// write png images of the graphs to that dir
+pub fn plot_all_models_at(path: &PathBuf) -> Result<Vec<String>, Error> {
+    let mut plots = Vec::new();
+
+    fs::create_dir(format!("{}/plots/", &path.display()));
+
+    for entry in fs::read_dir(path).unwrap() {
+        let file = PathBuf::from(entry?.path());
+        println!("{:?}", file.display());
+
+        let extension = match file.extension() {
+            Some(x) => x,
+            None => continue
+        };
+
+        if extension == "model" {
+            let mut plot_name = format!("{}/plots/{}_mjd_by_magobs.png", &path.display(), file.file_stem().unwrap().to_str().unwrap());
+            plot_by(file.as_path().to_str().unwrap(), &plot_name, DataPoint::MJD, DataPoint::MagObs);
+            plots.push(plot_name);
+
+            plot_name = format!("{}/plots/{}_phs_by_magmod.png", &path.display(), file.file_stem().unwrap().to_str().unwrap());
+            plot_by(file.as_path().to_str().unwrap(), &plot_name, DataPoint::Phase, DataPoint::MagModel);
+            plots.push(plot_name);
+
+        }
+    }
+    Ok(plots)
+}

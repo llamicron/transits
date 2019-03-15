@@ -48,9 +48,11 @@ fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
     let mut vartools = Vartools::new(&payload.cmd);
     vartools.run();
 
-    let mut vartools_stdout_file = PathBuf::from(df.vartools_path());
+    let mut vartools_stdout_file = PathBuf::from(&df.vartools_path());
     vartools_stdout_file.push("parameters.txt");
     fs::write(vartools_stdout_file, format!("{}", vartools)).expect("Couldnt write to file");
+
+    plotter::plot_all_models_at(&df.vartools_path());
 
     json!({
         "status": "ok",

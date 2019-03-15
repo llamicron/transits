@@ -1,5 +1,6 @@
 '''
 not working :(
+This won't be used right now, I wrote a plotter in rust. See ./src/plotter.rs
 
 readnplot.py
 reads VARTOOLS files and plots graphs
@@ -22,7 +23,9 @@ plotname = name[:11]
 figure(1)
 fig1 = figure(1)
 fig1.patch.set_facecolor('white')
+
 plot(MJD, OBS, 'k+', alpha = 0.5)
+
 title(plotname)
 xlabel("MJD")
 ylabel("Observed Magnitude")

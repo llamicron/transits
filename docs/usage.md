@@ -39,7 +39,7 @@ To start, boot up the API server with `cargo run` or execute the binary executab
 
 Before sending a post request to the server in order to run vartools, we need some data. All you need is a single data file in the format described in the [`DataFormatter`](https://llamicron.github.io/transits/data_formatter/) docs. Put the file somewhere accessible. For example, I have `october.dat` at `/Users/llamicron/Desktop/october.dat`. Grab the full, absolute path to that data file.
 
-Once you have your data and the path to it, send a post request to the API. Here's the payload to send:
+Once you have your data and the path to it, send a `POST` request to the API at the `/vartools` route. Here's the payload to send:
 ```json
 {
   "cmd": "vartools command goes here",

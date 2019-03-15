@@ -13,3 +13,4 @@ serde = "*"
 serde_json = "*"
 glob = "*"
 gnuplot = "0.0.29"
+rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }

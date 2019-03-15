@@ -10,22 +10,29 @@
 extern crate gnuplot;
 extern crate serde_derive;
 extern crate glob;
+extern crate rocket_cors;
 
 mod data_formatter;
 mod vartools;
 mod plotter;
 
-use plotter::DataPoint;
-use vartools::Vartools;
-
+// Standard libs
 use std::path::PathBuf;
 use std::fs;
 
+// External libs
 use rocket_contrib::json::{Json, JsonValue};
 use serde_derive::{Deserialize, Serialize};
+
+// My libs
+use plotter::DataPoint;
+use vartools::Vartools;
 use data_formatter::DataFormatter;
 
+
 use gnuplot::{Figure, Caption, Color};
+
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct VartoolsPayload {
@@ -33,9 +40,15 @@ struct VartoolsPayload {
     infile: String
 }
 
+#[get("/running")]
+fn running() -> JsonValue {
+    json!({
+        "status": "ok"
+    })
+}
 
 #[post("/vartools", format = "application/json", data = "<payload>")]
-fn handle_json(payload: Json<VartoolsPayload>) -> JsonValue {
+fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
     println!("Payload recieved.\n");
     let payload = payload;
 
@@ -82,8 +95,10 @@ fn not_found() -> JsonValue {
 }
 
 fn rocket() -> rocket::Rocket {
+    let cors = rocket_cors::CorsOptions::default().to_cors().expect("Could not create CORS defaults");
     rocket::ignite()
-        .mount("/api", routes![handle_json])
+        .mount("/api", routes![vartools, running])
+        .attach(cors)
         .register(catchers![not_found])
 }
 

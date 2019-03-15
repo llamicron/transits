@@ -21,7 +21,6 @@ use vartools::Vartools;
 use std::path::PathBuf;
 use std::fs;
 
-use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::json::{Json, JsonValue};
 use serde_derive::{Deserialize, Serialize};
 use data_formatter::DataFormatter;
@@ -33,7 +32,6 @@ struct VartoolsPayload {
     cmd: String,
     infile: String
 }
-
 
 
 #[post("/vartools", format = "application/json", data = "<payload>")]
@@ -86,7 +84,6 @@ fn not_found() -> JsonValue {
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .mount("/api", routes![handle_json])
-        .mount("/", StaticFiles::from("./src/static"))
         .register(catchers![not_found])
 }
 

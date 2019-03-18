@@ -3,7 +3,8 @@ let app = new Vue({
   data: {
     apiRunning: false,
     inputFileFound: "",
-    inputFile: "/Users/llamicron/Desktop/october.dat"
+    inputFile: "/Users/llamicron/Desktop/october.dat",
+    vartools: vartools
   },
   watch: {
     inputFile: function() {
@@ -40,31 +41,15 @@ let app = new Vue({
       xhr.onloadend = () => {
         result = JSON.parse(xhr.responseText);
         if (result.status == "ok" && result.file_exists) {
-          this.inputFileFound = "✔️ File exists";
+          this.inputFileFound = true;
         } else {
-          this.inputFileFound = "❌ File does not exist";
+          this.inputFileFound = false;
         }
       };
-
-
-      // const Http = new XMLHttpRequest();
-      // const url = 'http://localhost:8000/api/file_exists';
-      // Http.open("POST", url);
-      // Http.setRequestHeader("Content-type", "application/json");
-      // Http.send(JSON.stringify(
-      //   { "file_path": self.inputFile }
-      // ));
-      // Http.onreadystatechange = (e) => {
-      //   result = JSON.parse(Http.response);
-      //   if (result.status == "ok" && result.file_exists) {
-      //     this.inputFileFound = "File exists";
-      //   } else {
-      //     this.inputFileFound = "File does not exist";
-      //   }
-      // }
     }
   },
   mounted() {
     this.isApiRunning();
+    this.testInputFileExists();
   }
 })

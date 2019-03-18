@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>It works!</title>
+  <title>Vartools</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="css/uikit.min.css">
 
+  <script src="js/vartools.js"></script>
   <script src="js/libs/vue.js"></script>
   <script src="js/libs/uikit-icons.min.js"></script>
   <script src="js/libs/uikit.min.js"></script>
 </head>
+
 <body>
   <div id="app">
     <div class="uk-section uk-section-muted">
@@ -21,25 +24,95 @@
         <div uk-grid class="uk-child-width-1-2@s">
           <div>
             <div class="uk-margin">
-              <input type="text" v-model="inputFile" class="uk-input" placeholder="Full Path to Input File">
+              <code>
+                <input type="text" v-model="inputFile" class="uk-input" placeholder="Full Path to Input File">
+              </code>
             </div>
           </div>
           <div>
-            <code>
-              {{ inputFileFound }}
+            <code v-if="inputFileFound" style="color: green">
+              ✔️ File exists
+            </code>
+            <code v-else>
+              ❌ File does not exist
             </code>
           </div>
         </div>
 
       </div>
     </div>
-    <div class="uk-section">
+
+    <!-- VARTOOLS section -->
+    <div class="uk-section uk-section-muted">
       <div class="uk-container">
+
         <h1>VARTOOLS</h1>
+
+        <div uk-grid>
+          <!-- Add commands list -->
+          <div class="uk-width-1-4@s">
+            <div class="uk-card uk-card-default uk-card-small">
+              <div class="uk-card-header">
+                <h3 class="uk-card-title uk-margin-remove-bottom">Commands</h3>
+              </div>
+              <div class="uk-card-body">
+                <table class="uk-table uk-table-justify uk-table-divider">
+                  <tbody>
+                    <tr v-for="command in vartools.commands">
+                      <td>
+                        <code>{{ command.name }}</code>
+                      </td>
+                      <td><button @click="addCommand(command)" class="uk-button uk-button-small uk-button-primary"
+                          type="button">Add</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- Current commands area -->
+          <div class="uk-width-3-4@s">
+            <div class="uk-container">
+              <div uk-grid class="uk-child-width-1@s">
+                <!-- Foreach command -->
+                <div v-for="command in vartools.commands">
+                  <div class="uk-card uk-card-default uk-card-small">
+                    <div class="uk-card-header">
+                      <h3 class="uk-card-title uk-margin-remove-bottom">{{ command.name }}</h3>
+                      <p class="uk-text-meta uk-margin-remove-top">{{ command.description }}</p>
+                    </div>
+                    <div class="uk-card-body">
+                      <!-- Argument Input -->
+                      <div v-for="arg in command.arguments" class="uk-margin">
+                        <div uk-grid class="uk-child-width-1-2@s">
+                          <div>
+                            <code>
+                              <label :for="arg.id">{{ arg.name }}</label>
+                            </code>
+                            <input type="text" :id="arg.id" v-model="arg.value" class="uk-input uk-form-small">
+                          </div>
+                          <div>
+                            <dt>
+                              <code>
+                                {{ arg.name }}
+                              </code>
+                            </dt>
+                            <dd>{{ arg.description }}</dd>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script src="js/main.js"></script>
 </body>
+
 </html>

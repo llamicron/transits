@@ -22,7 +22,7 @@
         {% if node.layout == "page" %}
           {% if site.production %}
             <!-- Github pages links are fucky -->
-            <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="/transits{{ node.url }}">{{ node.title }}</a>
+            <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="/astrotools{{ node.url }}">{{ node.title }}</a>
           {% else %}
             <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
           {% endif %}
@@ -30,8 +30,8 @@
       {% endif %}
     {% endfor %}
 
-    <a class="sidebar-nav-item" href="https://github.com/llamicron/transits/releases">Download</a>
-    <a class="sidebar-nav-item" href="https://github.com/llamicron/transits/">GitHub</a>
+    <a class="sidebar-nav-item" href="https://github.com/llamicron/astrotools/releases">Download</a>
+    <a class="sidebar-nav-item" href="https://github.com/llamicron/astrotools/">GitHub</a>
     <span class="sidebar-nav-item">Currently v{{ site.version }}</span>
   </nav>
 

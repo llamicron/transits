@@ -3,7 +3,7 @@ layout: page
 title: Contact
 ---
 
-For issues in the program, [open an issue on Github](https://github.com/llamicron/transits/issues)
+For issues in the program, [open an issue on Github](https://github.com/llamicron/astrotools/issues)
 
 For questions about the application, email Luke Sweeney at `llamicron@gmail.com`
 

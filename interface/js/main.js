@@ -24,7 +24,7 @@ let app = new Vue({
           this.apiRunning = true;
           console.log("connected successfully");
         } else {
-          console.log("Could not connect to transits API, make sure it's running on localhost:8000");
+          console.log("Could not connect to astrotools API, make sure it's running on localhost:8000");
         }
       }
     },

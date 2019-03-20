@@ -9,6 +9,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "astrotools"
+version = "0.1.1"
+dependencies = [
+ "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gnuplot 0.0.29 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 1.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket_codegen 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket_contrib 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket_cors 0.5.0 (git+https://github.com/lawliet89/rocket_cors)",
+ "serde 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "base64"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -613,22 +629,6 @@ dependencies = [
 name = "traitobject"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "transits"
-version = "0.1.1"
-dependencies = [
- "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gnuplot 0.0.29 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex 1.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rocket 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rocket_codegen 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rocket_contrib 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rocket_cors 0.5.0 (git+https://github.com/lawliet89/rocket_cors)",
- "serde 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_derive 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "typeable"

@@ -3,7 +3,7 @@ layout: page
 title: Usage and Examples
 ---
 
-This is an overview of the API exposed by `transits`. It's main purpose is to take some parameters, like a path to an input file, a vartools command, etc, then run vartools with those parameters. It will return the output of vartools and the data files that vartools creates.
+This is an overview of the API exposed by `astrotools`. It's main purpose is to take some parameters, like a path to an input file, a vartools command, etc, then run vartools with those parameters. It will return the output of vartools and the data files that vartools creates.
 
 Vartools works with very large files, and creates very large files. As such, the file data will not be sent through the web API. Instead, an absolute path to a file will be the input.
 
@@ -17,10 +17,10 @@ Currently (v 0.1.0) this application does not have a web interface (will be adde
 
 To start, boot up the API server with `cargo run` or execute the binary executable. You should see:
 ```
-~/code/transits(dev ✗) cargo run
-   Compiling transits v0.1.0 (/Users/llamicron/code/transits)
+~/code/astrotools(dev ✗) cargo run
+   Compiling astrotools v0.1.0 (/Users/llamicron/code/astrotools)
     Finished dev [unoptimized + debuginfo] target(s) in 4.34s
-     Running `target/debug/transits`
+     Running `target/debug/astrotools`
 🔧 Configured for development.
     => address: localhost
     => port: 8000
@@ -37,7 +37,7 @@ To start, boot up the API server with `cargo run` or execute the binary executab
 🚀 Rocket has launched from http://localhost:8000
 ```
 
-Before sending a post request to the server in order to run vartools, we need some data. All you need is a single data file in the format described in the [`DataFormatter`](https://llamicron.github.io/transits/data_formatter/) docs. Put the file somewhere accessible. For example, I have `october.dat` at `/Users/llamicron/Desktop/october.dat`. Grab the full, absolute path to that data file.
+Before sending a post request to the server in order to run vartools, we need some data. All you need is a single data file in the format described in the [`DataFormatter`](https://llamicron.github.io/astrotools/data_formatter/) docs. Put the file somewhere accessible. For example, I have `october.dat` at `/Users/llamicron/Desktop/october.dat`. Grab the full, absolute path to that data file.
 
 Once you have your data and the path to it, send a `POST` request to the API at the `/vartools` route. Here's the payload to send:
 ```json

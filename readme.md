@@ -1,2 +1,2 @@
-# Transits
-vartools pipeline
+# AstroTools
+vartools made easy

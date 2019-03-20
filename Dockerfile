@@ -4,4 +4,4 @@ COPY . .
 
 RUN cargo install --path .
 RUN cargo build --release
-CMD ["transits"]
+CMD ["astrotools"]

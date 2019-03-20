@@ -272,6 +272,50 @@ vartools = {
           description: "By default the BLS spectrum is sampled at uniform frequency steps. To sample it at uniform steps in period or log(period) use the 'stepP' or 'steplogP' keyword.",
           index: 16,
         },
+        {
+          name: "adjust-qmin-by-mindt",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "adjust-qmin-by-mindt",
+          type: "text",
+          description: "Adaptively set the minimum q value to the maximum of qmin or mindt*frequency where mindt is the minimum time difference between consecutive points in the light curve",
+          index: 17,
+        },
+        {
+          name: "reduce-nbins",
+          id: uuid(),
+          value: function () {
+            if (this.selected) {
+              return "reduce-nbins";
+            } else {
+              return "";
+            }
+          },
+          rawValue: "",
+          type: 'checkbox',
+          selected: false,
+          description: "Adaptively reduce the number of phase bins at each frequency such that there are no more than 2 bins to sample a transit of duration qmin",
+          index: 18,
+        },
+        {
+          name: "reportharmonics",
+          id: uuid(),
+          value: function () {
+            if (this.selected) {
+              return "reportharmonics";
+            } else {
+              return "";
+            }
+          },
+          rawValue: "",
+          selected: false,
+          type: 'checkbox',
+          description: "Report harmonic frequencies",
+          index: 19,
+        },
       ]
     }
   ]

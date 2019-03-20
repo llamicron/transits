@@ -17,6 +17,7 @@
 
 <body>
   <div id="app">
+    <!-- File Section -->
     <div class="uk-section uk-section-muted">
       <div class="uk-container">
         <!-- Data Content -->
@@ -26,6 +27,12 @@
             <div class="uk-margin">
               <code>
                 <input type="text" v-model="inputFile" class="uk-input" placeholder="Full Path to Input File">
+              </code>
+            </div>
+            <div class="uk-margin">
+              Output Directory:
+              <code>
+                {{ outDir }}
               </code>
             </div>
           </div>
@@ -74,33 +81,71 @@
           <div class="uk-width-3-4@s">
             <div class="uk-container">
               <div uk-grid class="uk-child-width-1@s">
-                <!-- Foreach command -->
+                <!-- Foreach command | Command card -->
                 <div v-for="command in vartools.commands">
                   <div class="uk-card uk-card-default uk-card-small">
                     <div class="uk-card-header">
                       <h3 class="uk-card-title uk-margin-remove-bottom">{{ command.name }}</h3>
                       <p class="uk-text-meta uk-margin-remove-top">{{ command.description }}</p>
                     </div>
-                    <div class="uk-card-body">
-                      <!-- Argument Input -->
-                      <div v-for="arg in command.arguments" class="uk-margin">
-                        <div uk-grid class="uk-child-width-1-2@s">
-                          <div>
-                            <code>
-                              <label :for="arg.id">{{ arg.name }}</label>
-                            </code>
-                            <input type="text" :id="arg.id" v-model="arg.value" class="uk-input uk-form-small">
+                    <div class="uk-card-header">
+                      <ul uk-tab uk-switcher>
+                        <li class="uk-active"><a href="#">Command</a></li>
+                        <li><a href="#">Raw Input</a></li>
+                      </ul>
+
+                      <ul class="uk-switcher">
+                        <li>
+                          <!-- Custom command form result -->
+                          <h4>Output</h4>
+                          <code>
+                            {{ command.cmd() }}
+                          </code>
+
+                          <!-- Command input form -->
+                          <!-- Argument Input -->
+                          <h4>Arguments</h4>
+                          <div v-for="arg in command.arguments" class="uk-margin">
+                            <div uk-grid class="uk-child-width-1-2@s">
+                              <div>
+                                <!-- Argument inputs -->
+                                <div v-if="arg.type == 'checkbox'">
+                                  <label><input class="uk-checkbox" v-model="arg.selected" type="checkbox" checked> <code>{{ arg.name }}</code></label>
+                                </div>
+
+                                <div v-if="arg.type == 'select'">
+                                  <select v-model="arg.rawValue" class="uk-select">
+                                    <option v-for="option in arg.options" :value="option">{{ option }}</option>
+                                  </select>
+                                </div>
+
+                                <div v-if="arg.type == 'text'">
+                                  <code>
+                                    <label :for="arg.id">{{ arg.name }}</label>
+                                  </code>
+                                  <input type="text" :id="arg.id" v-model="arg.rawValue" :placeholder="arg.placeholder"
+                                    class="uk-input uk-form-small">
+                                </div>
+                              </div>
+                              <!-- Argument descriptions -->
+                              <div>
+                                <dt>
+                                  <code>
+                                    {{ arg.name }}
+                                  </code>
+                                </dt>
+                                <dd>{{ arg.description }}</dd>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <dt>
-                              <code>
-                                {{ arg.name }}
-                              </code>
-                            </dt>
-                            <dd>{{ arg.description }}</dd>
-                          </div>
-                        </div>
-                      </div>
+                        </li>
+                        <li>
+                          <!-- Custom input -->
+                          <code>
+                            <textarea class="uk-textarea" v-model="command.cmdOverride" cols="30" rows="10"></textarea>
+                          </code>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>

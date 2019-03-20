@@ -11,10 +11,12 @@ extern crate gnuplot;
 extern crate serde_derive;
 extern crate glob;
 extern crate rocket_cors;
+extern crate regex;
 
 mod data_formatter;
 mod vartools;
 mod plotter;
+mod commands;
 
 // Standard libs
 use std::path::{PathBuf, Path};
@@ -113,5 +115,6 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    rocket().launch();
+    // rocket().launch();
+    commands::parse_docs();
 }

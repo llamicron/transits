@@ -1,28 +1,4 @@
-// model:
-// vartools = {
-//   commands: [
-//     {
-//       name: "a name here",
-//       description: "a description here",
-//       arguments: [
-//         {
-//           name: "an argument name",
-//           value: "1.0",
-//           description: "some desc here",
-//           required: false
-//         },
-//         {
-//           name: "another argument name",
-//           value: "2.0",
-//           description: "some other desc here",
-//           required: true
-//         },
-//       ]
-//     }
-//   ]
-// }
-
-function uuidv4() {
+function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
@@ -32,86 +8,269 @@ function uuidv4() {
 vartools = {
   commands: [
     {
-      name: "BLS",
+      name: "-BLS",
       description: "Perform the Box-Least Squares (BLS) transit search algorithm on the light curves",
-      cmd: "",
+      cmdOverride: "",
+      cmd: function () {
+        cmd = this.name;
+        for (let i = 0; i < this.arguments.length; i++) {
+          const arg = this.arguments[i];
+          cmd += " " + arg.value();
+        }
+        return cmd;
+      },
       arguments: [
         {
+          name: "r",
+          id: uuid(),
+          value: function () {
+            if (this.rawValue.length > 0) {
+              return this.name + " " + this.rawValue;
+            } else {
+              return "";
+            }
+          },
+          rawValue: "",
+          placeholder: "rmin rmax",
+          type: 'text',
+          description: "Minimum and maximum stellar radius r to consider (in solar radii)",
+          index: 0
+        },
+        {
+          name: "q",
+          id: uuid(),
+          value: function () {
+            if (this.rawValue.length > 0) {
+              return this.name + " " + this.rawValue;
+            } else {
+              return "";
+            }
+          },
+          rawValue: "",
+          placeholder: "qmin qmax",
+          type: 'text',
+          description: "Fixed minimum and maximum q (fraction of orbit in transit) for the search",
+          index: 0
+        },
+        {
+          name: "density",
+          id: uuid(),
+          value: function() {
+            if (this.rawValue.length > 0) {
+              return this.name + " " + this.rawValue;
+            } else {
+              return "";
+            }
+          },
+          rawValue: "",
+          placeholder: "rho minexpdurfrac maxexpdurfrac",
+          type: 'text',
+          description: "stellar density (in grams per cubic centimeter) and a minimum and maximum fraction of the expected transit duration (assuming a circular orbit)",
+          index: 0
+        },
+        {
           name: "minper",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "Minimum periods to search in days",
-          required: true,
+          index: 1
         },
         {
           name: "maxper",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "Maximum periods to search in days",
-          required: true,
+          index: 2
         },
         {
           name: "nfreq",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "Number of trial frequencies to scan",
-          required: true,
+          index: 3
         },
         {
           name: "nbins",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "Number of phase bins to break the light curve into (this should be at least 2/qmin)",
-          required: true,
+          index: 4
         },
         {
           name: "timezone",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "Number (in hours) to add to add to UTC to get the local time",
-          required: true,
+          index: 5
         },
         {
           name: "Npeak",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "number of peaks in the BLS spectrum to find and report",
-          required: true,
+          index: 6
         },
         {
           name: "outperiodogram",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: "set to 1 to output the BLS period vs. SN spectrum",
-          required: true,
+          index: 7
         },
         {
           name: "outdir",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: 'output directory for the BLS spectrum if outperiodogram is set to 1, ".bls" will be appended to the filename',
-          required: false,
+          index: 8
         },
         {
           name: "omodel",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: 'Set to 1 or zero that can be used to output the model for the light curve, the output directory is then given in modeloutdir, the suffix ".bls.model" will be appended to the filename.',
-          required: true,
+          index: 9
         },
         {
           name: "modeloutdir",
-          id: uuidv4(),
-          value: "",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "",
+          type: 'text',
           description: 'Output directory for omodel ".bls.model" files',
-          required: false,
+          index: 10
         },
         {
           name: "correctlc",
-          id: uuidv4(),
-          value: "",
-          description: '1 or 0. set to 1 it will subtract the transit model from the light curve before passing it to the next command',
-          required: true,
+          id: uuid(),
+          value: function () {
+            if (this.selected) {
+              return "1";
+            } else {
+              return "0";
+            }
+          },
+          rawValue: "",
+          placeholder: "",
+          selected: false,
+          type: 'checkbox',
+          description: 'Will subtract the transit model from the light curve before passing it to the next command',
+          index: 11
+        },
+        {
+          name: "fittrap",
+          id: uuid(),
+          value: function () {
+            if (this.selected) { return "fittrap" } else { return "" }
+          },
+          rawValue: "",
+          selected: false,
+          placeholder: "",
+          type: 'checkbox',
+          description: "fit a trapezoidal transit to each BLS pea",
+          index: 12,
+        },
+        {
+          name: "nobinnedrms",
+          id: uuid(),
+          value: function () {
+            if (this.selected) { return "nobinnedrms" } else { return "" }
+          },
+          rawValue: "",
+          placeholder: "",
+          selected: false,
+          type: 'checkbox',
+          description: "Procedure runs faster, but the SN will tend to be suppressed for high significance detections",
+          index: 13,
+        },
+        {
+          name: "ophcurve",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "outdir phmin phmax phstep",
+          type: 'text',
+          description: "model phase curve will be output to a file in the directory outdir with suffix '.bls.phcurve'. It will be generated with phases between phmin and phmax and a uniform step size of phstep.",
+          index: 14,
+        },
+        {
+          name: "ojdcurve",
+          id: uuid(),
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "outdir jdstep",
+          type: 'text',
+          description: "model light curve will be output to a file in the directory outdir with suffix '.bls.jdcurve'. The times will be between the first and last times in the light curve with a uniform step size of jdstep.",
+          index: 15,
+        },
+        {
+          name: "uniform steps",
+          id: uuid(),
+          value: function () {
+            if (this.rawValue == "Uniform Frequency Steps (Default)") {
+              return "";
+            } else {
+              return this.rawValue
+            }
+          },
+          type: "select",
+          options: ["Uniform Frequency Steps (Default)", "stepP", "steplogP"],
+          rawValue: "Uniform Frequency Steps (Default)",
+          placeholder: "",
+          description: "By default the BLS spectrum is sampled at uniform frequency steps. To sample it at uniform steps in period or log(period) use the 'stepP' or 'steplogP' keyword.",
+          index: 16,
         },
       ]
     }

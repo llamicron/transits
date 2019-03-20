@@ -48,6 +48,12 @@ let app = new Vue({
       };
     }
   },
+  computed: {
+    outDir: function() {
+      pattern = new RegExp('.+?(?=\.)');
+      return this.inputFile.split('.')[0] + "/";
+    }
+  },
   mounted() {
     this.isApiRunning();
     this.testInputFileExists();

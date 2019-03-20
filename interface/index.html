@@ -110,7 +110,7 @@
                               <div>
                                 <!-- Argument inputs -->
                                 <div v-if="arg.type == 'checkbox'">
-                                  <label><input class="uk-checkbox" v-model="arg.selected" type="checkbox" checked> <code>{{ arg.name }}</code></label>
+                                  <label><input class="uk-checkbox" v-model="arg.rawValue" type="checkbox" checked> <code>{{ arg.name }}</code></label>
                                 </div>
 
                                 <div v-if="arg.type == 'select'">

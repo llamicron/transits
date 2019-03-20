@@ -76,7 +76,7 @@ vartools = {
       arguments: [
         {
           name: "r",
-          description: "Minimum and maximum stellar radius r to consider (in solar radii)",
+          description: "Minimum and maximum stellar radius r to consider (in solar radii). Should not be used with 'q' or 'density'",
           type: 'text',
 
           value: function () {
@@ -92,7 +92,7 @@ vartools = {
         },
         {
           name: "q",
-          description: "Fixed minimum and maximum q (fraction of orbit in transit) for the search",
+          description: "Fixed minimum and maximum q (fraction of orbit in transit) for the search. Should not be used with 'r' or 'density'",
           type: 'text',
 
           value: function () {
@@ -108,7 +108,7 @@ vartools = {
         },
         {
           name: "density",
-          description: "stellar density (in grams per cubic centimeter) and a minimum and maximum fraction of the expected transit duration (assuming a circular orbit)",
+          description: "stellar density (in grams per cubic centimeter) and a minimum and maximum fraction of the expected transit duration (assuming a circular orbit). Should not be used with 'r' or 'q'",
           type: 'text',
 
           value: function () {

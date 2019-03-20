@@ -11,8 +11,8 @@
 
   <script src="js/vartools.js"></script>
   <script src="js/libs/vue.js"></script>
-  <script src="js/libs/uikit-icons.min.js"></script>
   <script src="js/libs/uikit.min.js"></script>
+  <script src="js/libs/uikit-icons.min.js"></script>
 
   <style>
     .monospaced {
@@ -58,7 +58,6 @@
       <div class="uk-container">
 
         <h1>VARTOOLS</h1>
-
         <div uk-grid>
           <!-- Add commands list -->
           <div class="uk-width-1-4@s">
@@ -90,7 +89,7 @@
                 <div>
                   <ul id="sortableCommandsList" uk-accordion uk-sortable>
                     <li v-for="command in commands" :id="command.id" class="uk-open">
-                      <a class="uk-accordion-title" href="#">{{ command.index }} {{ command.name }}</a>
+                      <a class="uk-accordion-title" href="#">{{ command.index }}: {{ command.name }}</a>
                       <div class="uk-accordion-content">
                         <ul uk-tab uk-switcher>
                           <li class="uk-active"><a href="#">Argument Form</a></li>
@@ -101,6 +100,7 @@
                           <!-- Argument form -->
                           <li>
                             <h4>Output</h4>
+                            <a @click="copyToClipboard(command.cmd())" uk-tooltip="Copy" uk-icon="icon: copy"></a>
                             <code>{{ command.cmd() }}</code>
                             <h4>Arguments</h4>
                             <div v-for="arg in command.arguments" class="uk-margin">

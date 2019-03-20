@@ -1,3 +1,58 @@
+// command = {
+//   name: '-someCommand',
+//   description: '',
+//   cmdOverride: '',
+//   cmd: function () {
+//     cmd = this.name;
+//     for (let i = 0; i < this.arguments.length; i++) {
+//       const arg = this.arguments[i];
+//       cmd += " " + arg.value();
+//     }
+//     return cmd;
+//   },
+//   arguments: [
+//     // Args go here
+//   ]
+// }
+//
+// text = {
+//   name: 'a text input field',
+//   description: '',
+//   type: 'text',
+//   id: uuid(),
+//   value: function() {
+//     return this.rawValue;
+//   },
+//   rawValue: '',
+//   placeholder: '',
+//   index: 0,
+// }
+
+// checkbox = {
+//   name: 'a checkbox field',
+//   description: '',
+//   type: 'checkbox',
+//   id: uuid(),
+//   value: function () {
+//     return this.rawValue;
+//   },
+//   rawValue: false,
+//   index: 0
+// }
+
+// select = {
+//   name: 'a select field',
+//   description: '',
+//   type: 'select',
+//   id: uuid(),
+//   value: function () {
+//     return this.rawValue;
+//   },
+//   rawValue: "",
+//   options: ["option 1", "option 2", "option 3"],
+//   index: 0
+// }
+
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);

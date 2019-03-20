@@ -16,7 +16,6 @@ extern crate regex;
 mod data_formatter;
 mod vartools;
 mod plotter;
-mod commands;
 
 // Standard libs
 use std::path::{PathBuf, Path};
@@ -115,6 +114,5 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    // rocket().launch();
-    commands::parse_docs();
+    rocket().launch();
 }

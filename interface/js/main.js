@@ -4,7 +4,8 @@ let app = new Vue({
     apiRunning: false,
     inputFileFound: "",
     inputFile: "/Users/llamicron/Desktop/october.dat",
-    vartools: vartools
+    vartools: vartools,
+    commands: []
   },
   watch: {
     inputFile: function() {
@@ -46,8 +47,42 @@ let app = new Vue({
           this.inputFileFound = false;
         }
       };
+    },
+
+    removeCommand(id) {
+      console.log(id);
+      this.commands = this.commands.filter(x => x.id != id);
+    },
+
+    uuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
+
+    reIndexCommands() {
+      console.log("reindexing");
+
+      ul = document.getElementById("sortableCommandsList");
+
+      for (let i = 0; i < ul.children.length; i++) {
+        const li = ul.children[i];
+        this.commands.filter(x => x.id == li.id)[0].index = i;
+      }
+    },
+
+    addCommand(command) {
+      command.id = this.uuid();
+      for (let i = 0; i < command.arguments.length; i++) {
+        const arg = command.arguments[i];
+        arg.id = this.uuid();
+      }
+      command.index = this.commands.length;
+      this.commands.push(Object.assign({}, command))
     }
   },
+
   computed: {
     outDir: function() {
       pattern = new RegExp('.+?(?=\.)');
@@ -57,5 +92,9 @@ let app = new Vue({
   mounted() {
     this.isApiRunning();
     this.testInputFileExists();
+
+    addEventListener('stop', () => {
+      this.reIndexCommands();
+    })
   }
 })

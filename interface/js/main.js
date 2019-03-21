@@ -64,9 +64,11 @@ let app = new Vue({
       url = 'http://localhost:8000/api/file_exists'
       xhr.open("POST", url, true);
       xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      // Replace \ with /
+      file = this.inputFile.split('\\').join('/');
       // send the collected data as JSON
       xhr.send(JSON.stringify({
-        file_path: this.inputFile
+        file_path: file
       }));
 
       xhr.onloadend = () => {

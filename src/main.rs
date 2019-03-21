@@ -51,7 +51,8 @@ fn running() -> JsonValue {
 
 #[post("/file_exists", format = "application/json", data = "<payload>")]
 fn file_exists(payload: Json<HashMap<&str, &str>>) -> JsonValue {
-    println!("{:?}", payload.0);
+    // println!("{:?}", payload.0);
+    // println!("{:?}", PathBuf::from(&payload.0["file_path"]).is_file());
     json!({
         "status": "ok",
         "file_exists": PathBuf::from(payload.0["file_path"]).is_file()

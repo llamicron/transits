@@ -5,13 +5,31 @@ let app = new Vue({
     inputFileFound: "",
     inputFile: "/Users/llamicron/Desktop/october.dat",
     vartools: vartools,
-    commands: []
+    totalCommand: "",
+    commands: [],
+    flags: vartools.flags,
   },
+
   watch: {
     inputFile: function() {
       this.testInputFileExists();
+    },
+
+    commands: {
+      deep: true,
+      handler() {
+        this.parseTotalCommand();
+      }
+    },
+
+    flags: {
+      deep: true,
+      handler() {
+        this.parseTotalCommand();
+      }
     }
   },
+
   methods: {
     isApiRunning() {
       const Http = new XMLHttpRequest();
@@ -82,6 +100,10 @@ let app = new Vue({
       }
     },
 
+    removeExtraWhitespace(str) {
+      return str.replace(/ +(?= )/g, '');
+    },
+
     addCommand(command) {
       command.id = this.uuid();
       for (let i = 0; i < command.arguments.length; i++) {
@@ -94,11 +116,30 @@ let app = new Vue({
   },
 
   computed: {
-    outDir: function() {
+    outDir: function () {
       pattern = new RegExp('.+?(?=\.)');
       return this.inputFile.split('.')[0] + "/";
+    },
+
+    parseTotalCommand: function () {
+      fullCommand = "vartools ";
+      commands = this.commands.sort(function (a, b) {
+        return a.index - b.index;
+      })
+
+      commands.forEach(command => {
+        fullCommand += command.cmd();
+      });
+
+      this.flags.forEach(flag => {
+        fullCommand += " " + flag.value();
+      })
+
+      fullCommand = this.removeExtraWhitespace(fullCommand);
+      this.totalCommand = fullCommand;
     }
   },
+
   mounted() {
     this.isApiRunning();
     this.testInputFileExists();

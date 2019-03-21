@@ -53,6 +53,14 @@
       </div>
     </div>
 
+    <!-- VARTOOLS Command section -->
+    <div class="uk-section uk-section-default">
+      <div class="uk-container">
+        <h4>Full Vartools command</h4>
+        <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
+      </div>
+    </div>
+
     <!-- VARTOOLS section -->
     <div class="uk-section uk-section-muted">
       <div class="uk-container">
@@ -63,8 +71,12 @@
           <div class="uk-width-1-4@s">
             <div class="uk-card uk-card-default uk-card-small">
               <div class="uk-card-header">
-                <h3 class="uk-card-title uk-margin-remove-bottom">Commands</h3>
+                <h3 class="uk-card-title uk-margin-remove-bottom">
+                  Commands
+                  <span uk-tooltip="Add a command, they will be run in order. You can drag and drop to reorder them" class="uk-align-right" uk-icon="icon: info; ratio: 1.4"></span>
+                </h3>
               </div>
+              <!-- Main commands table -->
               <div class="uk-card-body">
                 <table class="uk-table uk-table-justify uk-table-divider">
                   <tbody>
@@ -78,6 +90,18 @@
                   </tbody>
                 </table>
               </div>
+              <hr>
+              <!-- Flags -->
+              <div class="uk-card-body">
+                <div v-for="flag in vartools.flags" class="uk-margin">
+                  <label>
+                    <input v-model="flag.rawValue" type="checkbox" class="uk-checkbox" >
+                    <code>
+                      {{ flag.name }}
+                    </code>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           <!-- Current commands area -->
@@ -89,7 +113,7 @@
                 <div>
                   <ul id="sortableCommandsList" uk-accordion uk-sortable>
                     <li v-for="command in commands" :id="command.id" class="">
-                      <a class="uk-accordion-title" href="#">{{ command.index }}: {{ command.name }}</a>
+                      <a class="uk-accordion-title" href="#">{{ command.name }}</a>
                       <div class="uk-accordion-content">
                         <ul uk-tab uk-switcher>
                           <li class="uk-active"><a href="#">Argument Form</a></li>

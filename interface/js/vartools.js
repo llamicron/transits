@@ -61,17 +61,17 @@ function boolToInt(bool) {
 vartools = {
   commands: [
     {
-      name: "-BLS",
+      name: "BLS",
       description: "Perform the Box-Least Squares (BLS) transit search algorithm on the light curves",
       cmdOverride: "",
       index: null,
       cmd: function () {
-        cmd = this.name;
+        cmd = '-' + this.name;
         for (let i = 0; i < this.arguments.length; i++) {
           const arg = this.arguments[i];
           cmd += " " + arg.value();
         }
-        return cmd;
+        return cmd.replace(/ +(?= )/g, '');
       },
       arguments: [
         {
@@ -364,6 +364,294 @@ vartools = {
           index: 19,
         },
       ]
-    }
+    },
+  ],
+  flags: [
+    {
+      name: "-alarm",
+      description: "Calculate the alarm variability statistic for each light curve.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-changeerror",
+      description: "Replace the formal errors in a light curve with the RMS of the light curve",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false
+    },
+    {
+      name: "-chi2",
+      description: "Calculate χ² per degree of freedom for the light curves. The output will include χ²/dof and the error weighted mean magnitude",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-rescalesig",
+      description: "Rescale the magnitude uncertainties of each light curve so that χ²/dof = 1 for every light curve. The rescale factor for each light curve will be included in the output table.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-rms",
+      description: "Calculate the RMS of the light curves. The output will include RMS, the mean magnitude, the expected RMS and the number of points in the light curve.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-savelc",
+      description: "This command can be used in conjunction with the -restorelc command to save a light curve and later restore it to this state.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-basename",
+      description: "Use this option to print only the basename of each light curve in the output table.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-binaryperiodogram",
+      description: "This option causes periodograms to be output in binary format rather than the default ascii format. The binary file will start with an integer giving the number of elements Nelem in the periodogram, followed by double arrays of size Nelem, one for each column included in the ascii version of the periodogram.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-header",
+      description: "Use this option to provide a one line header at the start of the output table.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-headeronly",
+      description: "Use this option to output the header and then quit without processing any light curves.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-log-command-line",
+      description: "Print the command-line syntax given to VARTOOLS as a comment to the output ascii table, before giving the header.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-matchstringid",
+      description: "If this option is specified then commands that require matching different points from the same image, will do so using a string-id for each image rather than by comparing the JD values. If this option is set then the id column for each light curve must be specified with the -inputlcformat option.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-nobuffer",
+      description: "If this is specified then stdout will not be buffered, by default it is buffered.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-noskipempty",
+      description: "By default empty light curves are skipped and not included in the output table. To not skip these, and include them in the output, give this option. Note that this option does not have an effect if the -readall option is used.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-numbercolumns",
+      description: "Prefix each column name in the header with its column number.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return "";
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-oneline",
+      description: "Output each statistic on a separate line rather than using the default of outputing a table. This option can provide more readable output when processing a single light curve. Its use is not suggested when processing a list of light curves",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-quiet",
+      description: "If this is specified the output table will not be generated, however any calls to output light curves, periodograms etc. will still be executed.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-readall",
+      description: "Use this option to force the program to read in all the light curves at once. If not specified, this mode will only be used if a command that requires storing all the light curves in memory is issued.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-showinputlcformat",
+      description: "Print the expected format of the input light curve(s) and exit.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-showinputlistformat",
+      description: "Print the expected format of the input light curve list and exit. This command was called -inputlistformat in older versions of VARTOOLS.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-skipmissing",
+      description: "Do not abort if a missing or unreadable light curve file is encountered. Instead skip the light curve and proceed with others in the list.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
+    {
+      name: "-tab",
+      description: "Use this option to use a tab-delimited starbase format for the output table rather than the default space-delimited format.",
+      type: 'checkbox',
+      value: function () {
+        if (this.rawValue) {
+          return this.name;
+        } else {
+          return '';
+        }
+      },
+      rawValue: false,
+    },
   ]
 }

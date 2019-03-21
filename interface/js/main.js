@@ -18,14 +18,14 @@ let app = new Vue({
     commands: {
       deep: true,
       handler() {
-        this.parseTotalCommand();
+        this.totalCommand = this.parseTotalCommand();
       }
     },
 
     flags: {
       deep: true,
       handler() {
-        this.parseTotalCommand();
+        this.totalCommand = this.parseTotalCommand();
       }
     }
   },
@@ -45,6 +45,18 @@ let app = new Vue({
           console.log("Could not connect to astrotools API, make sure it's running on localhost:8000");
         }
       }
+    },
+
+    // Runs the vartools command
+    run() {
+      var xhr = new XMLHttpRequest();
+      url = 'http://localhost:8000/api/vartools';
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+      xhr.send(JSON.stringify({
+        infile: this.inputFile,
+        cmd: this.parseTotalCommand(),
+      }));
     },
 
     testInputFileExists() {
@@ -77,6 +89,21 @@ let app = new Vue({
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    },
+
+    parseTotalCommand() {
+      fullCommand = "vartools ";
+
+      this.commands.forEach(command => {
+        fullCommand += command.cmd();
+      });
+
+      this.flags.forEach(flag => {
+        fullCommand += " " + flag.value();
+      })
+
+      fullCommand = this.removeExtraWhitespace(fullCommand);
+      return fullCommand;
     },
 
     copyToClipboard(str) {
@@ -119,24 +146,6 @@ let app = new Vue({
     outDir: function () {
       pattern = new RegExp('.+?(?=\.)');
       return this.inputFile.split('.')[0] + "/";
-    },
-
-    parseTotalCommand: function () {
-      fullCommand = "vartools ";
-      commands = this.commands.sort(function (a, b) {
-        return a.index - b.index;
-      })
-
-      commands.forEach(command => {
-        fullCommand += command.cmd();
-      });
-
-      this.flags.forEach(flag => {
-        fullCommand += " " + flag.value();
-      })
-
-      fullCommand = this.removeExtraWhitespace(fullCommand);
-      this.totalCommand = fullCommand;
     }
   },
 

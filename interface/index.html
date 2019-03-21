@@ -27,7 +27,7 @@
     <div class="uk-section uk-section-muted">
       <div class="uk-container">
         <!-- Data Content -->
-        <h1>INPUT</h1>
+        <h1>Input</h1>
         <div uk-grid class="uk-child-width-1-2@s">
           <div>
             <div class="uk-margin">
@@ -56,8 +56,13 @@
     <!-- VARTOOLS Command section -->
     <div class="uk-section uk-section-default">
       <div class="uk-container">
-        <h4>Full Vartools command</h4>
+        <h4>Full VARTOOLS command</h4>
         <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
+        <div class="uk-margin">
+          <button @click="run" class="uk-button uk-button-primary">
+            Run
+          </button>
+        </div>
       </div>
     </div>
 
@@ -104,6 +109,7 @@
               </div>
             </div>
           </div>
+
           <!-- Current commands area -->
           <div class="uk-width-3-4@s">
             <div class="uk-container">

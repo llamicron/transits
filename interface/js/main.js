@@ -3,7 +3,7 @@ let app = new Vue({
   data: {
     apiRunning: false,
     inputFileFound: "",
-    inputFile: "/Users/llamicron/Desktop/october.dat",
+    inputFile: "",
     vartools: vartools,
     totalCommand: "",
     commands: [],
@@ -13,6 +13,7 @@ let app = new Vue({
   watch: {
     inputFile: function() {
       this.testInputFileExists();
+      this.totalCommand = this.parseTotalCommand();
     },
 
     commands: {
@@ -55,10 +56,11 @@ let app = new Vue({
       xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
       xhr.send(JSON.stringify({
         infile: this.inputFile,
-        cmd: this.parseTotalCommand(),
+        cmd: this.totalCommand,
       }));
     },
 
+    // Posts to the API to see if the file exists
     testInputFileExists() {
       var xhr = new XMLHttpRequest();
       url = 'http://localhost:8000/api/file_exists'
@@ -93,8 +95,12 @@ let app = new Vue({
       });
     },
 
+    // Parses the full vartools command
     parseTotalCommand() {
-      fullCommand = "vartools ";
+      // Call vartools
+      fullCommand = "vartools";
+      // Add the input index file
+      fullCommand += " -l " + this.outDir() + "formatted_input/lc_list "
 
       this.commands.forEach(command => {
         fullCommand += command.cmd();
@@ -105,6 +111,7 @@ let app = new Vue({
       })
 
       fullCommand = this.removeExtraWhitespace(fullCommand);
+      fullCommand = fullCommand.split("{outdir}").join(this.outDir() + "vartools/")
       return fullCommand;
     },
 
@@ -141,11 +148,9 @@ let app = new Vue({
       }
       command.index = this.commands.length;
       this.commands.push(Object.assign({}, command))
-    }
-  },
+    },
 
-  computed: {
-    outDir: function () {
+    outDir () {
       pattern = new RegExp('.+?(?=\.)');
       return this.inputFile.split('.')[0] + "/";
     }

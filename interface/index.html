@@ -55,6 +55,7 @@
 
     <!-- VARTOOLS Command section -->
     <div class="uk-section uk-section-default">
+
       <div class="uk-container">
         <h4>
           Full VARTOOLS command
@@ -65,8 +66,10 @@
           <button @click="run" class="uk-button uk-button-primary">
             Run
           </button>
+          <div class="uk-margin-left" v-if="loading" uk-spinner></div>
         </div>
       </div>
+
     </div>
 
     <!-- VARTOOLS section -->

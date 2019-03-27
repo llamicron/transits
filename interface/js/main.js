@@ -6,6 +6,8 @@ let app = new Vue({
     inputFile: "/Users/llamicron/Desktop/october.dat",
     vartools: vartools,
     totalCommand: "",
+    loading: false,
+    vartoolsOutput: "some output here",
     commands: [],
     flags: vartools.flags,
   },
@@ -50,6 +52,7 @@ let app = new Vue({
 
     // Runs the vartools command
     run() {
+      this.loading = true;
       var xhr = new XMLHttpRequest();
       url = 'http://localhost:8000/api/vartools';
       xhr.open("POST", url, true);
@@ -59,9 +62,11 @@ let app = new Vue({
         cmd: this.totalCommand,
       }));
 
-      xhr.onreadystatechange = (result) => {
+      xhr.onloadend = (result) => {
         response = JSON.parse(result.currentTarget.responseText);
         console.log(response.vartools);
+        this.loading = false;
+        UIkit.notification("Results are ready!", {"status": "success"});
       }
     },
 

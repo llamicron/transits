@@ -7,7 +7,7 @@ let app = new Vue({
     vartools: vartools,
     totalCommand: "",
     loading: false,
-    vartoolsOutput: "some output here",
+    vartoolsOutput: "",
     commands: [],
     flags: vartools.flags,
   },
@@ -64,9 +64,11 @@ let app = new Vue({
 
       xhr.onloadend = (result) => {
         response = JSON.parse(result.currentTarget.responseText);
-        console.log(response.vartools);
+
         this.loading = false;
         UIkit.notification("Results are ready!", {"status": "success"});
+
+        this.vartoolsOutput = response.vartools;
       }
     },
 

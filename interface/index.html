@@ -23,189 +23,226 @@
 
 <body>
   <div id="app">
-    <!-- File Section -->
-    <div class="uk-section uk-section-muted">
-      <div class="uk-container">
-        <!-- Data Content -->
-        <h1>Input</h1>
-        <div uk-grid class="uk-child-width-1-2@s">
-          <div>
-            <div class="uk-margin">
-              <input type="text" v-model="inputFile" class="uk-input monospaced" placeholder="Full Path to Input File">
-            </div>
-            <div class="uk-margin">
-              Output Directory:
-              <code>
-                {{ outDir() }}
-              </code>
-            </div>
-          </div>
-          <div>
-            <code v-if="inputFileFound" style="color: green">
-              ✔️ File exists
-            </code>
-            <code v-else>
-              ❌ File does not exist
-            </code>
-          </div>
+
+    <!-- Navbar -->
+    <nav class="uk-navbar-container" uk-navbar>
+      <div class="uk-navbar-left">
+
+        <div class="uk-margin-left">
+          <ul class="uk-navbar-nav" uk-switcher="connect: .pages">
+            <li class="uk-active"><a href="#">Run</a></li>
+            <li><a href="#">Results</a></li>
+          </ul>
         </div>
 
       </div>
-    </div>
+    </nav>
 
-    <!-- VARTOOLS Command section -->
-    <div class="uk-section uk-section-default">
+    <div class="pages uk-switcher">
+      <!-- Page 1: Vartools input and config -->
+      <div>
+        <!-- File Section -->
+        <div class="uk-section uk-section-default">
+          <div class="uk-container">
+            <!-- Data Content -->
+            <h1>Input</h1>
+            <div uk-grid class="uk-child-width-1-2@s">
+              <div>
+                <div class="uk-margin">
+                  <input type="text" v-model="inputFile" class="uk-input monospaced"
+                    placeholder="Full Path to Input File">
+                </div>
+                <div class="uk-margin">
+                  Output Directory:
+                  <code>
+                        {{ outDir() }}
+                      </code>
+                </div>
+              </div>
+              <div>
+                <code v-if="inputFileFound" style="color: green">
+                      ✔️ File exists
+                    </code>
+                <code v-else>
+                      ❌ File does not exist
+                    </code>
+              </div>
+            </div>
 
-      <div class="uk-container">
-        <h4>
-          Full VARTOOLS command
-          <a @click="copyToClipboard(totalCommand)" uk-tooltip="Copy" class="uk-margin-small-left" uk-icon="icon: copy"></a>
-        </h4>
-        <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
-        <div class="uk-margin">
-          <button @click="run" class="uk-button uk-button-primary">
-            Run
-          </button>
-          <div class="uk-margin-left" v-if="loading" uk-spinner></div>
+          </div>
         </div>
-      </div>
 
-    </div>
+        <!-- VARTOOLS Command section -->
+        <div class="uk-section uk-section-muted">
 
-    <!-- VARTOOLS section -->
-    <div class="uk-section uk-section-muted">
-      <div class="uk-container">
-
-        <h1>VARTOOLS</h1>
-        <div uk-grid>
-          <!-- Add commands list -->
-          <div class="uk-width-1-4@s">
-            <div class="uk-card uk-card-default uk-card-small">
-              <div class="uk-card-header">
-                <h3 class="uk-card-title uk-margin-remove-bottom">
-                  Commands
-                  <span uk-tooltip="Add a command, they will be run in order. You can drag and drop to reorder them" class="uk-align-right" uk-icon="icon: info; ratio: 1.4"></span>
-                </h3>
-              </div>
-              <!-- Main commands table -->
-              <div class="uk-card-body">
-                <table class="uk-table uk-table-justify uk-table-divider">
-                  <tbody>
-                    <tr v-for="command in vartools.commands">
-                      <td>
-                        <code>{{ command.name }}</code>
-                      </td>
-                      <td><button @click="addCommand(command)" class="uk-button uk-button-small uk-button-primary"
-                          type="button">Add</button></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <hr>
-              <!-- Flags -->
-              <div class="uk-card-body">
-                <ul uk-accordion>
-                  <li>
-                    <a class="uk-accordion-title" href="#">Flags</a>
-                    <div class="uk-accordion-content">
-                      <div v-for="flag in vartools.flags" class="uk-margin">
-                        <label>
-                          <input v-model="flag.rawValue" type="checkbox" class="uk-checkbox">
-                          <code>
-                            {{ flag.name }}
-                          </code>
-                        </label>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+          <div class="uk-container">
+            <h4>
+              Full VARTOOLS command
+              <a @click="copyToClipboard(totalCommand)" uk-tooltip="Copy" class="uk-margin-small-left"
+                uk-icon="icon: copy"></a>
+            </h4>
+            <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
+            <div class="uk-margin">
+              <button @click="run" class="uk-button uk-button-primary">
+                Run
+              </button>
+              <div class="uk-margin-left" v-if="loading" uk-spinner></div>
             </div>
           </div>
 
-          <!-- Current commands area -->
-          <div class="uk-width-3-4@s">
-            <div class="uk-container">
+        </div>
 
+        <!-- VARTOOLS section -->
+        <div class="uk-section uk-section-default">
+          <div class="uk-container">
 
-              <div uk-grid class="uk-child-width-1@s">
-                <div>
-                  <ul id="sortableCommandsList" uk-accordion uk-sortable>
-                    <li v-for="command in commands" :id="command.id">
-                      <a class="uk-accordion-title" href="#">{{ command.name }}</a>
-                      <div class="uk-accordion-content">
-                        <ul uk-tab uk-switcher>
-                          <li class="uk-active"><a href="#">Argument Form</a></li>
-                          <li><a href="#">Raw Input</a></li>
-                        </ul>
-
-                        <ul class="uk-switcher">
-                          <!-- Argument form -->
-                          <li>
-                            <h4>
-                              Output
-                              <a @click="copyToClipboard(command.cmd())" class="uk-margin-small-left" uk-tooltip="Copy" uk-icon="icon: copy"></a>
-                            </h4>
-                            <textarea v-model="command.cmd()" style="color: black;" disabled cols="30" rows="10" class="uk-textarea"></textarea>
-                            <!-- <code>{{ command.cmd() }}</code> -->
-
-
-                            <h4>Arguments</h4>
-                            <div v-for="arg in command.arguments" class="uk-margin">
-                              <div uk-grid class="uk-child-width-1-2@s">
-                                <div>
-                                  <!-- Argument inputs -->
-                                  <div v-if="arg.type == 'checkbox'">
-                                    <label><input class="uk-checkbox" v-model="arg.rawValue" type="checkbox" checked>
-                                      <code>{{ arg.name }}</code></label>
-                                  </div>
-
-                                  <div v-if="arg.type == 'select'">
-                                    <select v-model="arg.rawValue" class="uk-select">
-                                      <option v-for="option in arg.options" :value="option">{{ option }}</option>
-                                    </select>
-                                  </div>
-
-                                  <div v-if="arg.type == 'text'">
-                                    <code>
-                                      <label :for="arg.id">{{ arg.name }}</label>
-                                    </code>
-                                    <input type="text" :id="arg.id" v-model="arg.rawValue"
-                                      :placeholder="arg.placeholder" class="uk-input monospaced uk-form-small">
-                                  </div>
-                                </div>
-                                <!-- Argument description column -->
-                                <div>
-                                  <dt>
-                                    <code>
-                                      {{ arg.name }}
-                                    </code>
-                                  </dt>
-                                  <dd>{{ arg.description }}</dd>
-                                </div>
-                              </div>
-                            </div>
-                            <hr>
-                            <a @click="removeCommand(command.id)" href="#">remove</a>
-                          </li>
-                          <!-- cmd Override -->
-                          <li>
-                            <textarea cols="30" rows="10" class="uk-textarea monospaced"
-                              v-model="command.cmdOverride"></textarea>
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-                  </ul>
-
+            <h1>VARTOOLS</h1>
+            <div uk-grid>
+              <!-- Add commands list -->
+              <div class="uk-width-1-4@s">
+                <div class="uk-card uk-card-default uk-card-small">
+                  <div class="uk-card-header">
+                    <h3 class="uk-card-title uk-margin-remove-bottom">
+                      Commands
+                      <span uk-tooltip="Add a command, they will be run in order. You can drag and drop to reorder them"
+                        class="uk-align-right" uk-icon="icon: info; ratio: 1.4"></span>
+                    </h3>
+                  </div>
+                  <!-- Main commands table -->
+                  <div class="uk-card-body">
+                    <table class="uk-table uk-table-justify uk-table-divider">
+                      <tbody>
+                        <tr v-for="command in vartools.commands">
+                          <td>
+                            <code>{{ command.name }}</code>
+                          </td>
+                          <td><button @click="addCommand(command)" class="uk-button uk-button-small uk-button-primary"
+                              type="button">Add</button></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <hr>
+                  <!-- Flags -->
+                  <div class="uk-card-body">
+                    <ul uk-accordion>
+                      <li>
+                        <a class="uk-accordion-title" href="#">Flags</a>
+                        <div class="uk-accordion-content">
+                          <div v-for="flag in vartools.flags" class="uk-margin">
+                            <label>
+                              <input v-model="flag.rawValue" type="checkbox" class="uk-checkbox">
+                              <code>
+                                    {{ flag.name }}
+                                  </code>
+                            </label>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
+              <!-- Current commands area -->
+              <div class="uk-width-3-4@s">
+                <div class="uk-container">
+
+
+                  <div uk-grid class="uk-child-width-1@s">
+                    <div>
+                      <ul id="sortableCommandsList" uk-accordion uk-sortable>
+                        <li v-for="command in commands" :id="command.id">
+                          <a class="uk-accordion-title" href="#">{{ command.name }}</a>
+                          <div class="uk-accordion-content">
+                            <ul uk-tab uk-switcher>
+                              <li class="uk-active"><a href="#">Argument Form</a></li>
+                              <li><a href="#">Raw Input</a></li>
+                            </ul>
+
+                            <ul class="uk-switcher">
+                              <!-- Argument form -->
+                              <li>
+                                <h4>
+                                  Output
+                                  <a @click="copyToClipboard(command.cmd())" class="uk-margin-small-left"
+                                    uk-tooltip="Copy" uk-icon="icon: copy"></a>
+                                </h4>
+                                <textarea v-model="command.cmd()" style="color: black;" disabled cols="30" rows="10"
+                                  class="uk-textarea"></textarea>
+                                <!-- <code>{{ command.cmd() }}</code> -->
+
+
+                                <h4>Arguments</h4>
+                                <div v-for="arg in command.arguments" class="uk-margin">
+                                  <div uk-grid class="uk-child-width-1-2@s">
+                                    <div>
+                                      <!-- Argument inputs -->
+                                      <div v-if="arg.type == 'checkbox'">
+                                        <label><input class="uk-checkbox" v-model="arg.rawValue" type="checkbox"
+                                            checked>
+                                          <code>{{ arg.name }}</code></label>
+                                      </div>
+
+                                      <div v-if="arg.type == 'select'">
+                                        <select v-model="arg.rawValue" class="uk-select">
+                                          <option v-for="option in arg.options" :value="option">{{ option }}</option>
+                                        </select>
+                                      </div>
+
+                                      <div v-if="arg.type == 'text'">
+                                        <code>
+                                              <label :for="arg.id">{{ arg.name }}</label>
+                                            </code>
+                                        <input type="text" :id="arg.id" v-model="arg.rawValue"
+                                          :placeholder="arg.placeholder" class="uk-input monospaced uk-form-small">
+                                      </div>
+                                    </div>
+                                    <!-- Argument description column -->
+                                    <div>
+                                      <dt>
+                                        <code>
+                                              {{ arg.name }}
+                                            </code>
+                                      </dt>
+                                      <dd>{{ arg.description }}</dd>
+                                    </div>
+                                  </div>
+                                </div>
+                                <hr>
+                                <a @click="removeCommand(command.id)" href="#">remove</a>
+                              </li>
+                              <!-- cmd Override -->
+                              <li>
+                                <textarea cols="30" rows="10" class="uk-textarea monospaced"
+                                  v-model="command.cmdOverride"></textarea>
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+
+
+      <!-- Page 2: Results -->
+      <div>
+        <div class="uk-container">
+          <textarea name="vartoolsResults" cols="1" rows="50" class="uk-textarea" v-model="vartoolsOutput"></textarea>
+        </div>
+      </div>
     </div>
+
+
   </div>
 
   <script src="js/main.js"></script>

@@ -2,8 +2,8 @@ let app = new Vue({
   el: "#app",
   data: {
     apiRunning: false,
-    inputFileFound: "",
-    inputFile: "",
+    inputFileFound: false,
+    inputFile: "/Users/llamicron/Desktop/october.dat",
     vartools: vartools,
     totalCommand: "",
     commands: [],

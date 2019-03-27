@@ -56,7 +56,10 @@
     <!-- VARTOOLS Command section -->
     <div class="uk-section uk-section-default">
       <div class="uk-container">
-        <h4>Full VARTOOLS command</h4>
+        <h4>
+          Full VARTOOLS command
+          <a @click="copyToClipboard(totalCommand)" uk-tooltip="Copy" class="uk-margin-small-left" uk-icon="icon: copy"></a>
+        </h4>
         <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
         <div class="uk-margin">
           <button @click="run" class="uk-button uk-button-primary">
@@ -98,14 +101,21 @@
               <hr>
               <!-- Flags -->
               <div class="uk-card-body">
-                <div v-for="flag in vartools.flags" class="uk-margin">
-                  <label>
-                    <input v-model="flag.rawValue" type="checkbox" class="uk-checkbox" >
-                    <code>
-                      {{ flag.name }}
-                    </code>
-                  </label>
-                </div>
+                <ul uk-accordion>
+                  <li>
+                    <a class="uk-accordion-title" href="#">Flags</a>
+                    <div class="uk-accordion-content">
+                      <div v-for="flag in vartools.flags" class="uk-margin">
+                        <label>
+                          <input v-model="flag.rawValue" type="checkbox" class="uk-checkbox">
+                          <code>
+                            {{ flag.name }}
+                          </code>
+                        </label>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -129,9 +139,14 @@
                         <ul class="uk-switcher">
                           <!-- Argument form -->
                           <li>
-                            <h4>Output</h4>
-                            <a @click="copyToClipboard(command.cmd())" uk-tooltip="Copy" uk-icon="icon: copy"></a>
-                            <code>{{ command.cmd() }}</code>
+                            <h4>
+                              Output
+                              <a @click="copyToClipboard(command.cmd())" class="uk-margin-small-left" uk-tooltip="Copy" uk-icon="icon: copy"></a>
+                            </h4>
+                            <textarea v-model="command.cmd()" style="color: black;" disabled cols="30" rows="10" class="uk-textarea"></textarea>
+                            <!-- <code>{{ command.cmd() }}</code> -->
+
+
                             <h4>Arguments</h4>
                             <div v-for="arg in command.arguments" class="uk-margin">
                               <div uk-grid class="uk-child-width-1-2@s">

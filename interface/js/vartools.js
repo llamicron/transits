@@ -213,7 +213,7 @@ vartools = {
           value: function () {
             return this.rawValue;
           },
-          rawValue: "",
+          rawValue: "{outdir}",
           placeholder: "outdir",
           index: 8,
         },
@@ -236,7 +236,7 @@ vartools = {
           value: function () {
             return this.rawValue;
           },
-          rawValue: "",
+          rawValue: "{outdir}",
           placeholder: "modeloutdir",
           index: 10
         },

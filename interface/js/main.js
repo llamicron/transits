@@ -58,6 +58,11 @@ let app = new Vue({
         infile: this.inputFile,
         cmd: this.totalCommand,
       }));
+
+      xhr.onreadystatechange = (result) => {
+        response = JSON.parse(result.currentTarget.responseText);
+        console.log(response.vartools);
+      }
     },
 
     // Posts to the API to see if the file exists

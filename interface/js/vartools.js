@@ -66,11 +66,17 @@ vartools = {
       cmdOverride: "",
       index: null,
       cmd: function () {
+
+        if (this.cmdOverride.length > 0) {
+          return this.cmdOverride;
+        }
+
         cmd = '-' + this.name;
         for (let i = 0; i < this.arguments.length; i++) {
           const arg = this.arguments[i];
           cmd += " " + arg.value();
         }
+
         return cmd.replace(/ +(?= )/g, '');
       },
       arguments: [

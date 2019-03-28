@@ -38,6 +38,7 @@
       </div>
     </nav>
 
+    <!-- Pages -->
     <div class="pages uk-switcher">
       <!-- Page 1: Vartools input and config -->
       <div>
@@ -72,7 +73,7 @@
           </div>
         </div>
 
-        <!-- VARTOOLS Command section -->
+        <!-- VARTOOLS Full Command section -->
         <div class="uk-section uk-section-muted">
 
           <div class="uk-container">
@@ -154,12 +155,15 @@
                       <ul id="sortableCommandsList" uk-accordion uk-sortable>
                         <li v-for="command in commands" :id="command.id">
                           <a class="uk-accordion-title" href="#">{{ command.name }}</a>
+
                           <div class="uk-accordion-content">
+                            <!-- Switcher Tabs -->
                             <ul uk-tab uk-switcher>
                               <li class="uk-active"><a href="#">Argument Form</a></li>
                               <li><a href="#">Raw Input</a></li>
                             </ul>
 
+                            <!-- Switcher tabs content -->
                             <ul class="uk-switcher">
                               <!-- Argument form -->
                               <li>
@@ -169,7 +173,7 @@
                                     uk-tooltip="Copy" uk-icon="icon: copy"></a>
                                 </h4>
                                 <textarea v-model="command.cmd()" style="color: black;" disabled cols="30" rows="10"
-                                  class="uk-textarea"></textarea>
+                                  class="uk-textarea monospaced"></textarea>
                                 <!-- <code>{{ command.cmd() }}</code> -->
 
 

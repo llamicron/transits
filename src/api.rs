@@ -5,6 +5,7 @@ use std::fs;
 
 // External libs
 use rocket_contrib::json::{Json, JsonValue};
+// use rocket_contrib::serve::StaticFiles;
 use serde_derive::{Deserialize, Serialize};
 use serde_json;
 

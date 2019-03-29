@@ -31,9 +31,9 @@
 
         <div class="uk-margin-left">
           <ul class="uk-navbar-nav" uk-switcher="connect: .pages">
-            <li class="uk-active"><a href="#">Run</a></li>
+            <li><a href="#">Run</a></li>
             <!-- TODO: Switch this back before committing -->
-            <li><a href="#">Results</a></li>
+            <li class="uk-active"><a href="#">Results</a></li>
           </ul>
         </div>
 
@@ -249,11 +249,22 @@
       <div>
         <div class="uk-container">
           <br>
+          <ul uk-tab uk-switcher>
+            <li class="uk-active"><a href="#">Text Results</a></li>
+            <li><a href="#">Graphs</a></li>
+          </ul>
 
-          <div v-if="vartoolsOutput.length > 100" class="uk-margin">
-            <pre><span uk-icon="icon: download" class="uk-margin-right"></span>{{ outDir() }}vartools/parameters.txt</pre>
-          </div>
-          <pre>{{ vartoolsOutput }}</pre>
+          <ul class="uk-switcher">
+            <li>
+              <div v-if="vartoolsOutput.length > 100" class="uk-margin">
+                <pre><span uk-icon="icon: download" uk-tooltip="title: Results below are already saved to the following file; pos: left" class="uk-margin-right"></span>{{ outDir() }}vartools/parameters.txt</pre>
+              </div>
+              <pre>{{ vartoolsOutput }}</pre>
+            </li>
+            <li>
+              More coming soon...
+            </li>
+          </ul>
         </div>
       </div>
     </div>

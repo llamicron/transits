@@ -13,10 +13,6 @@ let app = new Vue({
     loading: false,
   },
 
-  components: {
-    "results-table": ResultsTableComponent,
-  },
-
   watch: {
     inputFile: function() {
       this.testInputFileExists();

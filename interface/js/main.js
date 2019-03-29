@@ -58,6 +58,7 @@ let app = new Vue({
     // Runs the vartools command
     run() {
       this.loading = true;
+      this.vartoolsOutput = "Vartools is running..."
       var xhr = new XMLHttpRequest();
       url = 'http://localhost:8000/api/vartools';
       xhr.open("POST", url, true);

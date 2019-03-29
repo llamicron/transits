@@ -36,6 +36,6 @@ let ResultsTableComponent = Vue.component('results-table', {
   },
 
   template: `
-
+    <pre>{{ results }}</pre>
   `
 })

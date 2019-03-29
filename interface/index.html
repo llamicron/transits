@@ -13,6 +13,7 @@
   <script src="js/libs/vue.js"></script>
   <script src="js/libs/uikit.min.js"></script>
   <script src="js/libs/uikit-icons.min.js"></script>
+  <script src="js/components/results_table.js"></script>
 
   <style>
     .monospaced {
@@ -31,6 +32,7 @@
         <div class="uk-margin-left">
           <ul class="uk-navbar-nav" uk-switcher="connect: .pages">
             <li class="uk-active"><a href="#">Run</a></li>
+            <!-- TODO: Switch this back before committing -->
             <li><a href="#">Results</a></li>
           </ul>
         </div>
@@ -81,7 +83,11 @@
               Full VARTOOLS command
               <a @click="copyToClipboard(totalCommand)" uk-tooltip="Copy" class="uk-margin-small-left"
                 uk-icon="icon: copy"></a>
-            </h4>
+              <a v-if="!commandLocked" @click="commandLocked = !commandLocked" uk-tooltip="Unlocked" class="uk-margin-small-left"
+                uk-icon="icon: unlock"></a>
+              <a v-else @click="commandLocked = !commandLocked" uk-tooltip="Locked" class="uk-margin-small-left"
+                uk-icon="icon: lock"></a>
+              </h4>
             <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
             <div class="uk-margin">
               <button @click="run" class="uk-button uk-button-primary">
@@ -241,8 +247,10 @@
       <!-- Page 2: Results -->
       <div>
         <div class="uk-container">
-          <textarea name="vartoolsResults" cols="1" rows="50" class="uk-textarea" v-model="vartoolsOutput"></textarea>
         </div>
+
+
+        <!-- <textarea name="vartoolsResults" cols="1" rows="50" class="uk-textarea monospaced" v-model="vartoolsOutput"></textarea> -->
       </div>
     </div>
 

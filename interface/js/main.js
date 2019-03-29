@@ -5,11 +5,16 @@ let app = new Vue({
     inputFileFound: false,
     inputFile: "/Users/llamicron/Desktop/october.dat",
     vartools: vartools,
+    commandLocked: false,
     totalCommand: "",
-    loading: false,
-    vartoolsOutput: "",
+    vartoolsOutput: "Nothing here yet... Run Vartools first",
     commands: [],
     flags: vartools.flags,
+    loading: false,
+  },
+
+  components: {
+    "results-table": ResultsTableComponent,
   },
 
   watch: {
@@ -109,6 +114,10 @@ let app = new Vue({
 
     // Parses the full vartools command
     parseTotalCommand() {
+      if (this.commandLocked) {
+        return this.totalCommand;
+      }
+
       // Call vartools
       fullCommand = "vartools";
       // Add the input index file

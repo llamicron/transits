@@ -1,4 +1,6 @@
 FROM shepmaster/rust-nightly
+
+# Launch API
 WORKDIR /usr/src/api
 COPY . .
 

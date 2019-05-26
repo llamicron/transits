@@ -5,7 +5,8 @@ use std::fs;
 
 // External libs
 use rocket_contrib::json::{Json, JsonValue};
-// use rocket_contrib::serve::StaticFiles;
+use rocket_contrib::serve::StaticFiles;
+
 use serde_derive::{Deserialize, Serialize};
 use serde_json;
 
@@ -116,6 +117,7 @@ pub fn api() -> rocket::Rocket {
     let cors = rocket_cors::CorsOptions::default().to_cors().expect("Could not create CORS defaults");
     rocket::ignite()
         .mount("/api", routes![vartools, running, file_exists])
+        .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/interface")))
         .attach(cors)
         .register(catchers![not_found, bad_request, unprocessable])
 }

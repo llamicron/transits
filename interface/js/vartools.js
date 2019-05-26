@@ -66,7 +66,6 @@ vartools = {
       cmdOverride: "",
       index: null,
       cmd: function () {
-
         if (this.cmdOverride.length > 0) {
           return this.cmdOverride;
         }
@@ -371,6 +370,135 @@ vartools = {
         },
       ]
     },
+    {
+      name: "LS",
+      description: "Perform a Generalized Lomb-Scargle (L-S) search of the light curves for periodic sinusoidal signals",
+      cmdOverride: "",
+      index: null,
+      cmd: function () {
+        if (this.cmdOverride.length > 0) {
+          return this.cmdOverride;
+        }
+
+        cmd = '-' + this.name;
+        for (let i = 0; i < this.arguments.length; i++) {
+          const arg = this.arguments[i];
+          cmd += " " + arg.value();
+        }
+
+        return cmd.replace(/ +(?= )/g, '');
+      },
+      arguments: [
+        {
+          name: "minp",
+          description: "The search is done over frequencies between fmin = 1/maxp to fmax = 1/minp",
+          type: 'text',
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "minp",
+          index: 0,
+        },
+        {
+          name: "maxp",
+          description: "The search is done over frequencies between fmin = 1/maxp to fmax = 1/minp",
+          type: 'text',
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "maxp",
+          index: 1,
+        },
+        {
+          name: "subsample",
+          description: "uniform frequency step-size of Δf = subsample/T, where T is the time-span of the observations.",
+          type: 'text',
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "subsample",
+          index: 2,
+        },
+        {
+          name: "Npeaks",
+          description: "find the Npeaks strongest peaks in the L-S periodogram.",
+          type: 'text',
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "Npeaks",
+          index: 3,
+        },
+        {
+          name: "operiodogram",
+          description: "operiodogram is a flag that is either 1 to output the periodogram for each light curve to a separate file, or 0 not to.",
+          type: 'checkbox',
+          value: function () {
+            if (this.rawValue) {
+              return "1";
+            } else {
+              return "0";
+            }
+          },
+          rawValue: false,
+          index: 4,
+        },
+        {
+          name: "outdir",
+          description: "Output directory for previous option.",
+          type: 'text',
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "{outdir}",
+          placeholder: "{outdir}",
+          index: 5,
+        },
+        {
+          name: "noGLS",
+          description: 'By default the Generalized Lomb-Scargle periodogram due to Zechmeister and Kürster 2009, A&A, 496, 577 is calculated. Check to compute the traditional periodogram',
+          type: 'checkbox',
+          value: function () {
+            if (this.rawValue) {
+              return this.name;
+            } else {
+              return '';
+            }
+          },
+          rawValue: false,
+          index: 6
+        },
+        {
+          name: "whiten",
+          description: "the light curve will be whitened at each peak period and the periodogram will be recomputed before searching for the next peak period.",
+          type: 'checkbox',
+          value: function () {
+            if (this.rawValue) {
+              return this.name;
+            } else {
+              return '';
+            }
+          },
+          rawValue: false,
+          index: 7
+        },
+        {
+          name: "'clip' clip clipiter",
+          description: "change the clipping parameters for calculating the average and RMS of the power spectrum when computing the SNR value of a peak. clip is the sigma-clipping factor, and clipiter is a flag that is 1 or 0 to toggle iterative clipping.",
+          type: 'text',
+          value: function () {
+            return this.rawValue;
+          },
+          rawValue: "",
+          placeholder: "'clip' clip clipiter",
+          index: 8,
+        },
+      ]
+    }
   ],
   flags: [
     {

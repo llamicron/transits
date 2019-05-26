@@ -165,7 +165,8 @@ let app = new Vue({
         arg.id = this.uuid();
       }
       command.index = this.commands.length;
-      this.commands.push(Object.assign({}, command))
+      copy = _.clone(command);
+      this.commands.push(copy);
     },
 
     outDir () {

@@ -32,22 +32,36 @@ fn running() -> JsonValue {
     })
 }
 
-
-#[post("/file_exists", format = "application/json", data = "<payload>")]
-fn file_exists(payload: Json<HashMap<&str, &str>>) -> JsonValue {
-    if !&payload.0.contains_key("file_path") {
-        return json!({
-            "status": "error",
-            "file_exists": false,
-            "reason": "no entry found for key. payload needs key 'file_path'"
-        })
-    }
+#[get("/input_files", format = "application/json"]
+fn get_input_files() -> JsonValue {
+    // This is just for development
+    let mut files: Vec<_> = fs::read_dir("/Users/llamicron/code/astrotools_data/").unwrap().map(|res| res.unwrap().path()).collect();
+    // Production
+    // let mut files: Vec<_> = fs::read_dir("/home/data").unwrap().map(|res| res.unwrap().path()).collect();
+    files.sort();
 
     json!({
         "status": "ok",
-        "file_exists": PathBuf::from(&payload.0["file_path"]).is_file()
+        "files": json!(files)
     })
 }
+
+
+// #[post("/file_exists", format = "application/json", data = "<payload>")]
+// fn file_exists(payload: Json<HashMap<&str, &str>>) -> JsonValue {
+//     if !&payload.0.contains_key("file_path") {
+//         return json!({
+//             "status": "error",
+//             "file_exists": false,
+//             "reason": "no entry found for key. payload needs key 'file_path'"
+//         })
+//     }
+
+//     json!({
+//         "status": "ok",
+//         "file_exists": PathBuf::from(&payload.0["file_path"]).is_file()
+//     })
+// }
 
 
 #[post("/vartools", format = "application/json", data = "<payload>")]
@@ -116,7 +130,7 @@ fn not_found() -> JsonValue {
 pub fn api() -> rocket::Rocket {
     let cors = rocket_cors::CorsOptions::default().to_cors().expect("Could not create CORS defaults");
     rocket::ignite()
-        .mount("/api", routes![vartools, running, file_exists])
+        .mount("/api", routes![vartools, running, get_input_files])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/interface")))
         .attach(cors)
         .register(catchers![not_found, bad_request, unprocessable])

@@ -53,23 +53,21 @@
               <div>
                 <div class="uk-margin">
                   <div class="uk-inline uk-width-1-1@s">
-                    <input v-model="inputFile" class="uk-input monospaced" type="text">
+                    <!-- <input v-model="inputFile" class="uk-input monospaced" type="text"> -->
+                    <select v-model="inputFile" name="inputFileSelect" class="uk-select">
+                      <option value="" disabled selected>Select a File</option>
+                      <option v-for="file in inputFiles" :value="file">{{ file.split('/').last() }}</option>
+                    </select>
                   </div>
                 </div>
-                <div uk-grid>
-                  <div class="uk-width-3-4@s">
+                <!-- <div uk-grid>
+                  <div class="uk-width-1-1@s">
                     <div class="uk-margin">
                       Output Directory:
                       <code>{{ outDir() }}</code>
                     </div>
                   </div>
-                  <div class="uk-width-1-4@s">
-                    <div class="uk-margin">
-                      <code v-if="inputFileFound" style="color: green">✔️ File exists</code>
-                      <code v-else>❌ File does not exist</code>
-                    </div>
-                  </div>
-                </div>
+                </div> -->
               </div>
             </div>
 

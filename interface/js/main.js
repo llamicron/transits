@@ -1,9 +1,16 @@
+if (!Array.prototype.last) {
+  Array.prototype.last = function () {
+    return this[this.length - 1];
+  };
+};
+
 let app = new Vue({
   el: "#app",
   data: {
     apiRunning: false,
-    inputFileFound: false,
-    inputFile: "/Users/llamicron/Desktop/october.dat",
+    // inputFile: "/Users/llamicron/Desktop/october.dat",
+    inputFile: "",
+    inputFiles: [],
     vartools: vartools,
     commandLocked: false,
     totalCommand: "",
@@ -74,27 +81,18 @@ let app = new Vue({
       }
     },
 
-    // Posts to the API to see if the file exists
-    testInputFileExists() {
-      var xhr = new XMLHttpRequest();
-      url = 'http://localhost:8000/api/file_exists'
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      // Replace \ with /
-      file = this.inputFile.split('\\').join('/');
-      // send the collected data as JSON
-      xhr.send(JSON.stringify({
-        file_path: file
-      }));
+    getInputFiles() {
+      url = "http://localhost:8000/api/input_files";
 
-      xhr.onloadend = () => {
-        result = JSON.parse(xhr.responseText);
-        if (result.status == "ok" && result.file_exists) {
-          this.inputFileFound = true;
-        } else {
-          this.inputFileFound = false;
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = () => {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          this.inputFiles = JSON.parse(xmlHttp.responseText)['files'];
         }
-      };
+      }
+      xmlHttp.open("GET", url, true); // true for asynchronous
+      xmlHttp.send(null);
+
     },
 
     removeCommand(id) {
@@ -177,7 +175,7 @@ let app = new Vue({
 
   mounted() {
     this.isApiRunning();
-    this.testInputFileExists();
+    this.getInputFiles();
 
     addEventListener('stop', () => {
       this.reIndexCommands();

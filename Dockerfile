@@ -1,9 +1,9 @@
 FROM shepmaster/rust-nightly
 
-# Launch API
-WORKDIR /usr/src/api
-COPY . .
+RUN mkdir /home/astrotools
+WORKDIR /home/astrotools
 
-RUN cargo install --path .
+COPY . .
 RUN cargo build --release
-CMD ["astrotools"]
+
+CMD ["./target/release/astrotools"]

@@ -32,7 +32,7 @@ fn running() -> JsonValue {
     })
 }
 
-#[get("/input_files", format = "application/json"]
+#[get("/input_files", format = "application/json")]
 fn get_input_files() -> JsonValue {
     // This is just for development
     let mut files: Vec<_> = fs::read_dir("/Users/llamicron/code/astrotools_data/").unwrap().map(|res| res.unwrap().path()).collect();

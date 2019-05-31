@@ -22,7 +22,6 @@ let app = new Vue({
 
   watch: {
     inputFile: function() {
-      this.testInputFileExists();
       this.totalCommand = this.parseTotalCommand();
     },
 

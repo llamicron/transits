@@ -2,6 +2,7 @@
 use std::path::{PathBuf, Path};
 use std::collections::HashMap;
 use std::fs;
+use std::env;
 
 // External libs
 use rocket_contrib::json::{Json, JsonValue};
@@ -25,6 +26,7 @@ struct VartoolsPayload {
 
 
 // Routes
+// Sanity check
 #[get("/running")]
 fn running() -> JsonValue {
     json!({
@@ -32,36 +34,33 @@ fn running() -> JsonValue {
     })
 }
 
+// Returns a list of input files in the data directory (/home/data)
 #[get("/input_files", format = "application/json")]
 fn get_input_files() -> JsonValue {
-    // This is just for development
-    let mut files: Vec<_> = fs::read_dir("/Users/llamicron/code/astrotools_data/").unwrap().map(|res| res.unwrap().path()).collect();
-    // Production
-    // let mut files: Vec<_> = fs::read_dir("/home/data").unwrap().map(|res| res.unwrap().path()).collect();
+
+    let path = match env::var("ASTROTOOLS_DEV") {
+        Ok(_) => "/Users/llamicron/code/astrotools_data/",
+        Err(_) => "/home/data"
+    };
+
+    println!("{:?}", path);
+
+    let mut files: Vec<_> = fs::read_dir(path).unwrap().map(|res| res.unwrap().path()).collect();
+
     files.sort();
+
+    let culled_files = files.iter().filter(|file| match file.extension() {
+        Some(extension) => extension == "dat",
+        None => false
+    }).collect::<Vec<_>>();
+
+    println!("{:?}", culled_files);
 
     json!({
         "status": "ok",
-        "files": json!(files)
+        "files": json!(culled_files)
     })
 }
-
-
-// #[post("/file_exists", format = "application/json", data = "<payload>")]
-// fn file_exists(payload: Json<HashMap<&str, &str>>) -> JsonValue {
-//     if !&payload.0.contains_key("file_path") {
-//         return json!({
-//             "status": "error",
-//             "file_exists": false,
-//             "reason": "no entry found for key. payload needs key 'file_path'"
-//         })
-//     }
-
-//     json!({
-//         "status": "ok",
-//         "file_exists": PathBuf::from(&payload.0["file_path"]).is_file()
-//     })
-// }
 
 
 #[post("/vartools", format = "application/json", data = "<payload>")]
@@ -166,35 +165,5 @@ pub mod tests {
         assert_eq!(result.status(), Status::Ok);
 
         assert!(result.body_string().unwrap().contains("ok"));
-    }
-
-    #[test]
-    fn file_exists() {
-        let client = client();
-
-        // Doesn't accept a get request
-        let mut result = client.get("/api/file_exists").dispatch();
-        assert_eq!(result.status(), Status::NotFound);
-
-        // Doesn't accept a payload without the key "file_exists"
-        let mut result = client.post("/api/file_exists")
-                               .body(r#"{}"#)
-                               .header(ContentType::JSON)
-                               .dispatch();
-
-        assert!(result.body_string().unwrap().contains("no entry found for key"));
-
-        let mut result = client.post("/api/file_exists")
-                               .body(r#"{"file_path":"/file/doesnt/exist"}"#)
-                               .header(ContentType::JSON)
-                               .dispatch();
-
-        let result_string = match result.body_string() {
-            Some(x) => x,
-            _ => String::from("failed")
-        };
-
-        assert!(result_string.contains("ok"));
-        assert!(result_string.contains("false"));
     }
 }

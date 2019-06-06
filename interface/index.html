@@ -84,7 +84,7 @@
 
           <div class="uk-container">
             <h4>
-              Full VARTOOLS command
+              VARTOOLS command
               <a @click="copyToClipboard(totalCommand)" uk-tooltip="Copy" class="uk-margin-small-left"
                 uk-icon="icon: copy"></a>
               <a v-if="!commandLocked" @click="commandLocked = !commandLocked" uk-tooltip="Unlocked"
@@ -104,12 +104,11 @@
         </div>
 
         <!-- VARTOOLS section -->
-        <div class="uk-section uk-section-muted">
+        <!-- <div class="uk-section uk-section-muted">
           <div class="uk-container">
 
             <h1>VARTOOLS</h1>
             <div uk-grid>
-              <!-- Add commands list -->
               <div class="uk-width-1-4@s">
                 <div class="uk-card uk-card-default uk-card-small">
                   <div class="uk-card-header">
@@ -119,7 +118,6 @@
                         class="uk-align-right" uk-icon="icon: info; ratio: 1.4"></span>
                     </h3>
                   </div>
-                  <!-- Main commands table -->
                   <div class="uk-card-body">
                     <table class="uk-table uk-table-justify uk-table-divider">
                       <tbody>
@@ -134,7 +132,6 @@
                     </table>
                   </div>
                   <hr>
-                  <!-- Flags -->
                   <div class="uk-card-body">
                     <ul uk-accordion>
                       <li>
@@ -143,9 +140,7 @@
                           <div v-for="flag in vartools.flags" class="uk-margin">
                             <label>
                               <input v-model="flag.rawValue" type="checkbox" class="uk-checkbox">
-                              <code>
-                                    {{ flag.name }}
-                                  </code>
+                              <code>{{ flag.name }}</code>
                             </label>
                           </div>
                         </div>
@@ -155,7 +150,6 @@
                 </div>
               </div>
 
-              <!-- Current commands area -->
               <div class="uk-width-3-4@s">
                 <div class="uk-container">
 
@@ -167,15 +161,12 @@
                           <a class="uk-accordion-title" href="#">{{ command.name }}</a>
 
                           <div class="uk-accordion-content">
-                            <!-- Switcher Tabs -->
                             <ul uk-tab uk-switcher>
                               <li class="uk-active"><a href="#">Argument Form</a></li>
                               <li><a href="#">Raw Input</a></li>
                             </ul>
 
-                            <!-- Switcher tabs content -->
                             <ul class="uk-switcher">
-                              <!-- Argument form -->
                               <li>
                                 <h4>
                                   Output
@@ -184,14 +175,12 @@
                                 </h4>
                                 <textarea v-model="command.cmd()" style="color: black;" disabled cols="30" rows="10"
                                   class="uk-textarea monospaced"></textarea>
-                                <!-- <code>{{ command.cmd() }}</code> -->
 
 
                                 <h4>Arguments</h4>
                                 <div v-for="arg in command.arguments" class="uk-margin">
                                   <div uk-grid class="uk-child-width-1-2@s">
                                     <div>
-                                      <!-- Argument inputs -->
                                       <div v-if="arg.type == 'checkbox'">
                                         <label><input class="uk-checkbox" v-model="arg.rawValue" type="checkbox"
                                             checked>
@@ -212,12 +201,9 @@
                                           :placeholder="arg.placeholder" class="uk-input monospaced uk-form-small">
                                       </div>
                                     </div>
-                                    <!-- Argument description column -->
                                     <div>
                                       <dt>
-                                        <code>
-                                              {{ arg.name }}
-                                            </code>
+                                        <code>{{ arg.name }}</code>
                                       </dt>
                                       <dd>{{ arg.description }}</dd>
                                     </div>
@@ -226,7 +212,6 @@
                                 <hr>
                                 <a @click="removeCommand(command.id)" href="#">remove</a>
                               </li>
-                              <!-- cmd Override -->
                               <li>
                                 <textarea cols="30" rows="10" class="uk-textarea monospaced"
                                   v-model="command.cmdOverride"></textarea>
@@ -243,7 +228,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
 

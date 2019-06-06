@@ -14,7 +14,7 @@ pub struct DataFormatter {
 impl DataFormatter {
     /// Rewrites data from infile to outdir
     /// takes a string of the relative or absolute path of the output directory
-    /// Returns a vector of files written
+    /// Creates an 'lc_list' file for vartools to use (index of other files)
     pub fn reformat(&self) -> bool {
 
         match fs::create_dir_all(&self.formatted_path()) {
@@ -31,7 +31,7 @@ impl DataFormatter {
 
         let contents = fs::read_to_string(&self.infile).expect("File could not be read");
 
-        // Each line gets written to it's own file
+        // Each line in the .dat file gets written to it's own file
         for line in contents.split("\n").collect::<Vec<&str>>() {
             if line.len() <= 0 {
                 continue;

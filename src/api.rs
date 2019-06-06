@@ -43,18 +43,16 @@ fn get_input_files() -> JsonValue {
         Err(_) => "/home/data"
     };
 
-    println!("{:?}", path);
+    println!("Using data directory {:?}", path);
 
-    let mut files: Vec<_> = fs::read_dir(path).unwrap().map(|res| res.unwrap().path()).collect();
+    let files: Vec<_> = fs::read_dir(path).unwrap().map(|res| res.unwrap().path()).collect();
 
-    files.sort();
-
-    let culled_files = files.iter().filter(|file| match file.extension() {
+    let mut culled_files = files.iter().filter(|file| match file.extension() {
         Some(extension) => extension == "dat",
         None => false
     }).collect::<Vec<_>>();
 
-    println!("{:?}", culled_files);
+    culled_files.sort();
 
     json!({
         "status": "ok",
@@ -79,7 +77,12 @@ fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
     println!("Done.\n");
 
 
+
     let mut vartools = Vartools::new(&payload.cmd);
+
+    vartools.cmd = str::replace(&vartools.cmd, "{infile}", &format!("{}/lc_list", &df.formatted_path().to_str().unwrap())[..]);
+    vartools.cmd = str::replace(&vartools.cmd, "{outdir}", &df.vartools_path().into_os_string().into_string().unwrap());
+
     println!("Running Vartools... This could take some time...");
     vartools.run();
 
@@ -95,7 +98,7 @@ fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
     };
     println!("Done.\n");
 
-    println!("All tasks done.\n");
+    println!("All tasks finished.\n");
     json!({
         "status": "ok",
         "vartools": format!("{}", vartools),

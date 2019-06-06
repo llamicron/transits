@@ -59,6 +59,11 @@ let app = new Vue({
 
     // Runs the vartools command
     run() {
+      if (!this.inputFile) {
+        UIkit.notification("Please select an input file", { "status": "warning" });
+        return false;
+      }
+
       this.loading = true;
       this.vartoolsOutput = "Vartools is running..."
       var xhr = new XMLHttpRequest();
@@ -115,7 +120,8 @@ let app = new Vue({
       // Call vartools
       fullCommand = "vartools";
       // Add the input index file
-      fullCommand += " -l " + this.outDir() + "formatted_input/lc_list "
+      // fullCommand += " -l " + this.outDir() + "formatted_input/lc_list "
+      fullCommand += " -l {infile} "
 
       this.commands.forEach(command => {
         fullCommand += command.cmd();
@@ -126,7 +132,7 @@ let app = new Vue({
       })
 
       fullCommand = this.removeExtraWhitespace(fullCommand);
-      fullCommand = fullCommand.split("{outdir}").join(this.outDir() + "vartools/")
+      // fullCommand = fullCommand.split("{outdir}").join(this.outDir() + "vartools/")
       return fullCommand;
     },
 

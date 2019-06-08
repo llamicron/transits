@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::io::{Error, ErrorKind};
+use std::time::SystemTime;
 
 use std::fs::OpenOptions;
 use std::io::BufWriter;
@@ -52,6 +53,8 @@ impl DataFormatter {
     /// Creates an 'lc_list' file for vartools to use (index of other files)
     pub fn reformat(&self) -> Result<(), Error> {
 
+        let start = SystemTime::now();
+
         self.create_needed_dirs()?;
 
         let mut files_written: Vec<PathBuf> = vec![];
@@ -88,6 +91,8 @@ impl DataFormatter {
             writeln!(buf, "{}", stardata.join(" "))?;
         }
         self.write_index_file();
+
+        println!("Finished reformatting in {:?} seconds", SystemTime::now().duration_since(start).unwrap());
         Ok(())
     }
 

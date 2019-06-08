@@ -12,6 +12,7 @@ extern crate serde_derive;
 extern crate glob;
 extern crate rocket_cors;
 extern crate regex;
+use std::io::prelude::*;
 
 mod api;
 mod data_formatter;

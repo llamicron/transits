@@ -48,7 +48,7 @@ fn get_input_files() -> JsonValue {
     let files: Vec<_> = fs::read_dir(path).unwrap().map(|res| res.unwrap().path()).collect();
 
     let mut culled_files = files.iter().filter(|file| match file.extension() {
-        Some(extension) => extension == "dat",
+        Some(extension) => extension == "csv",
         None => false
     }).collect::<Vec<_>>();
 
@@ -73,7 +73,10 @@ fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
 
 
     println!("Reformatting data...");
-    df.reformat();
+    match df.reformat() {
+        Ok(_) => (),
+        Err(e) => println!("Could not format data: {}", e)
+    }
     println!("Done.\n");
 
 

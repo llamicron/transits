@@ -2,7 +2,35 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::io::{Error, ErrorKind};
 
+use std::fs::OpenOptions;
+use std::io::BufWriter;
+use std::io::Write;
+
 const FILE_EXTENSION: &'static str = "obs";
+
+#[derive(Debug)]
+pub struct DataPoint {
+    pub starname: String,
+    pub mjd: String,
+    pub mag: String,
+    pub magerror: String
+}
+
+impl DataPoint {
+    fn from(line: &str) -> DataPoint {
+        let data = line.split(",").collect::<Vec<&str>>();
+        DataPoint {
+            starname: String::from(data[0]),
+            mjd: String::from(data[1]),
+            mag: String::from(data[2]),
+            magerror: String::from(data[3]),
+        }
+    }
+
+    fn as_text(&self) -> String {
+        format!("{},{},{},", self.mjd, self.mag, self.magerror)
+    }
+}
 
 #[derive(Debug)]
 pub struct DataFormatter {
@@ -12,26 +40,24 @@ pub struct DataFormatter {
 
 // Methods
 impl DataFormatter {
+
+    fn create_needed_dirs(&self) -> Result<(), Error> {
+        fs::create_dir_all(&self.formatted_path())?;
+        fs::create_dir_all(&self.vartools_path())?;
+        Ok(())
+    }
+
     /// Rewrites data from infile to outdir
     /// takes a string of the relative or absolute path of the output directory
     /// Creates an 'lc_list' file for vartools to use (index of other files)
-    pub fn reformat(&self) -> bool {
+    pub fn reformat(&self) -> Result<(), Error> {
 
-        match fs::create_dir_all(&self.formatted_path()) {
-            Err(e) => return false,
-            Ok(_) => ()
-        };
-
-        match fs::create_dir_all(&self.vartools_path()) {
-            Err(e) => return false,
-            Ok(_) => ()
-        };
+        self.create_needed_dirs()?;
 
         let mut files_written: Vec<PathBuf> = vec![];
 
-        let contents = fs::read_to_string(&self.infile).expect("File could not be read");
+        let contents = fs::read_to_string(&self.infile)?;
 
-        // Each line in the .dat file gets written to it's own file
         for line in contents.split("\n").collect::<Vec<&str>>() {
             if line.len() <= 0 {
                 continue;
@@ -46,25 +72,23 @@ impl DataFormatter {
 
             let starname = stardata.remove(0);
 
-            if stardata.len() % 3 != 0 {
-                // TODO test this
-                println!("Star data not divisible by 3");
-                return false;
+            if starname.to_ascii_uppercase() == "STARNAME" {
+                continue;
             }
 
-            let mut i = 0;
-            let mut to_write = String::new();
-            while i < stardata.len() {
-                let chunk = format!("{} {} {}\n", stardata[i], stardata[i + 1], stardata[i + 2]);
-                to_write.push_str(chunk.as_str());
-                i += 3;
-            }
+            let mut filename = self.formatted_path();
+            filename.push(format!("{}.obs", starname));
 
-            fs::write(format!("{}/{}.{}", &self.formatted_path().display(), &starname, &FILE_EXTENSION), &to_write).expect("Couldnt write to file");
+            let file = OpenOptions::new()
+                                    .append(true)
+                                    .create(true)
+                                    .open(filename).unwrap();
+
+            let mut buf = BufWriter::new(file);
+            writeln!(buf, "{}", stardata.join(" "))?;
         }
-
         self.write_index_file();
-        true
+        Ok(())
     }
 
     fn write_index_file(&self) -> bool {

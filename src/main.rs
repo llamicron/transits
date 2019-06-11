@@ -5,13 +5,17 @@
 #![allow(unused_variables)]
 #![allow(unused_mut)]
 
-#[macro_use] extern crate rocket;
-#[macro_use] extern crate rocket_contrib;
+#[macro_use]
+extern crate rocket;
+#[macro_use]
+extern crate rocket_contrib;
 extern crate gnuplot;
+#[macro_use]
 extern crate serde_derive;
 extern crate glob;
 extern crate rocket_cors;
 extern crate regex;
+extern crate csv;
 use std::io::prelude::*;
 
 mod api;
@@ -20,6 +24,7 @@ mod vartools;
 mod plotter;
 
 use api::api;
+use data_formatter::DataFormatter;
 
 fn main() {
     api().launch();

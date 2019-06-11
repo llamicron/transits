@@ -2,41 +2,28 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::io::{Error, ErrorKind};
 use std::time::SystemTime;
+use serde::Deserialize;
 
 use std::fs::OpenOptions;
 use std::io::BufWriter;
 use std::io::Write;
 
+use csv::ReaderBuilder;
+
 const FILE_EXTENSION: &'static str = "obs";
-
-#[derive(Debug)]
-pub struct DataPoint {
-    pub starname: String,
-    pub mjd: String,
-    pub mag: String,
-    pub magerror: String
-}
-
-impl DataPoint {
-    fn from(line: &str) -> DataPoint {
-        let data = line.split(",").collect::<Vec<&str>>();
-        DataPoint {
-            starname: String::from(data[0]),
-            mjd: String::from(data[1]),
-            mag: String::from(data[2]),
-            magerror: String::from(data[3]),
-        }
-    }
-
-    fn as_text(&self) -> String {
-        format!("{},{},{},", self.mjd, self.mag, self.magerror)
-    }
-}
 
 #[derive(Debug)]
 pub struct DataFormatter {
     pub infile: PathBuf,
     pub path: PathBuf
+}
+
+#[derive(Debug, Deserialize)]
+struct DataPoint {
+    starname: String,
+    mjd: String,
+    mag: String,
+    magerror: String,
 }
 
 // Methods
@@ -57,30 +44,16 @@ impl DataFormatter {
 
         self.create_needed_dirs()?;
 
-        let mut files_written: Vec<PathBuf> = vec![];
-
         let contents = fs::read_to_string(&self.infile)?;
+        let mut rdr = ReaderBuilder::new().from_reader(contents.as_bytes());
 
-        for line in contents.split("\n").collect::<Vec<&str>>() {
-            if line.len() <= 0 {
-                continue;
-            }
+        for row in rdr.records() {
+            let record = row?;
+            let data: DataPoint = record.deserialize(None)?;
 
-            let mut split_ch = " ";
-            if line.contains(",") {
-                split_ch = ","
-            }
-
-            let mut stardata = line.split(&split_ch).collect::<Vec<&str>>();
-
-            let starname = stardata.remove(0);
-
-            if starname.to_ascii_uppercase() == "STARNAME" {
-                continue;
-            }
 
             let mut filename = self.formatted_path();
-            filename.push(format!("{}.obs", starname));
+            filename.push(format!("{}.obs", data.starname));
 
             let file = OpenOptions::new()
                                     .append(true)
@@ -88,7 +61,7 @@ impl DataFormatter {
                                     .open(filename).unwrap();
 
             let mut buf = BufWriter::new(file);
-            writeln!(buf, "{}", stardata.join(" "))?;
+            writeln!(buf, "{},{},{}", data.mjd, data.mag, data.magerror)?;
         }
         self.write_index_file();
 

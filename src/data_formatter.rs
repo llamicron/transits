@@ -18,7 +18,7 @@ pub struct DataFormatter {
     pub path: PathBuf
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct DataPoint {
     starname: String,
     mjd: String,
@@ -106,6 +106,10 @@ impl DataFormatter {
 impl DataFormatter {
     /// Takes a string of an absolute or relative path to the input
     pub fn new(infile: &str) -> Result<DataFormatter, Error> {
+        if !Path::new(infile).exists() {
+            return Err(Error::new(ErrorKind::NotFound, "File does not exist"));
+        }
+
         // /some/dir/october.dat
         let inputfile = PathBuf::from(infile);
 

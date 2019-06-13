@@ -4,10 +4,36 @@ if (!Array.prototype.last) {
   };
 };
 
+function get(url, callback) {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function () {
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+      callback(JSON.parse(xmlHttp.responseText));
+    }
+  }
+  xmlHttp.open("GET", url, true);
+  xmlHttp.send(null);
+}
+
+function post(url, data, callback) {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open("POST", url, true);
+  xmlHttp.setRequestHeader("Content-type", "application/json");
+
+  xmlHttp.onreadystatechange = function () {
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+      callback(JSON.parse(xmlHttp.responseText));
+    }
+  }
+
+  xmlHttp.send(JSON.stringify(data));
+}
+
 let app = new Vue({
   el: "#app",
   data: {
     apiRunning: false,
+    result: {},
     // inputFile: "/Users/llamicron/Desktop/october.dat",
     inputFile: "",
     inputFiles: [],
@@ -18,6 +44,7 @@ let app = new Vue({
     commands: [],
     flags: vartools.flags,
     loading: false,
+    reformat_loading: false
   },
 
   watch: {
@@ -41,20 +68,35 @@ let app = new Vue({
   },
 
   methods: {
+    reformat() {
+      url = "http://localhost:8000/api/reformat";
+      data = {
+        infile: this.inputFile,
+      }
+
+      this.reformat_loading = true
+
+
+      post(url, data, result => {
+        if (result.status == "error") {
+          console.log(result);
+          message = result.reason;
+          status = "danger"
+        } else {
+          message = "Reformatted";
+          status = "success"
+        }
+        UIkit.notification(message, { "status": status });
+        this.reformat_loading = false
+      })
+    },
+
     isApiRunning() {
-      const Http = new XMLHttpRequest();
-      const url = 'http://localhost:8000/api/running';
-      Http.open("GET", url);
-      Http.send();
-      Http.onreadystatechange = (e) => {
-        result = JSON.parse(Http.response);
+      get("http://localhost:8000/api/running", (result) => {
         if (result.status == "ok") {
           this.apiRunning = true;
-          console.log("connected successfully");
-        } else {
-          console.log("Could not connect to astrotools API, make sure it's running on localhost:8000");
         }
-      }
+      })
     },
 
     // Runs the vartools command
@@ -66,37 +108,27 @@ let app = new Vue({
 
       this.loading = true;
       this.vartoolsOutput = "Vartools is running..."
-      var xhr = new XMLHttpRequest();
-      url = 'http://localhost:8000/api/vartools';
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-      xhr.send(JSON.stringify({
+
+      data = {
         infile: this.inputFile,
-        cmd: this.totalCommand,
-      }));
-
-      xhr.onloadend = (result) => {
-        response = JSON.parse(result.currentTarget.responseText);
-
-        this.loading = false;
-        UIkit.notification("Results are ready!", {"status": "success"});
-
-        this.vartoolsOutput = response.vartools;
+        cmd: this.totalCommand
       }
+      url = 'http://localhost:8000/api/vartools'
+
+      post(url, data, (result) => {
+        console.log(result);
+        this.loading = false;
+        UIkit.notification("Results are ready!", { "status": "success" });
+
+        this.vartoolsOutput = result.vartools;
+      })
     },
 
     getInputFiles() {
       url = "http://localhost:8000/api/input_files";
-
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.onreadystatechange = () => {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-          this.inputFiles = JSON.parse(xmlHttp.responseText)['files'];
-        }
-      }
-      xmlHttp.open("GET", url, true); // true for asynchronous
-      xmlHttp.send(null);
-
+      get(url, (result) => {
+        this.inputFiles = result.files;
+      });
     },
 
     removeCommand(id) {

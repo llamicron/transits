@@ -24,6 +24,11 @@ struct VartoolsPayload {
     infile: String
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct ReformatPayload {
+    infile: String
+}
+
 
 // Routes
 // Sanity check
@@ -60,11 +65,9 @@ fn get_input_files() -> JsonValue {
     })
 }
 
-
-#[post("/vartools", format = "application/json", data = "<payload>")]
-fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
-    println!("Payload recieved.\n");
-    let payload = payload;
+#[post("/reformat", format = "application/json", data = "<payload>")]
+fn reformat(payload: Json<ReformatPayload>) -> JsonValue {
+    println!("{:?}", payload);
 
     let df = match DataFormatter::new(&payload.infile) {
         Ok(x) => x,
@@ -75,11 +78,30 @@ fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
     println!("Reformatting data...");
     match df.reformat() {
         Ok(_) => (),
-        Err(e) => println!("Could not format data: {}", e)
+        Err(e) => {
+            println!("Could not format data: {}", e);
+            return json!({
+                "status": "error",
+                "reason": format!("{}", e),
+            })
+        }
     }
     println!("Done.\n");
 
+    json!({
+        "status": "ok",
+    })
+}
 
+#[post("/vartools", format = "application/json", data = "<payload>")]
+fn vartools(payload: Json<VartoolsPayload>) -> JsonValue {
+    println!("Payload recieved.\n");
+
+    // Still need a data formatter for path purposes, doesn't actually reformat here
+    let df = match DataFormatter::new(&payload.infile) {
+        Ok(x) => x,
+        Err(e) => return json!({ "status": "error", "reason": format!("{}", e) }),
+    };
 
     let mut vartools = Vartools::new(&payload.cmd);
 
@@ -135,7 +157,7 @@ fn not_found() -> JsonValue {
 pub fn api() -> rocket::Rocket {
     let cors = rocket_cors::CorsOptions::default().to_cors().expect("Could not create CORS defaults");
     rocket::ignite()
-        .mount("/api", routes![vartools, running, get_input_files])
+        .mount("/api", routes![vartools, running, get_input_files, reformat])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/interface")))
         .attach(cors)
         .register(catchers![not_found, bad_request, unprocessable])

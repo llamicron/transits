@@ -19,12 +19,24 @@
     .monospaced {
       font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
     }
+
+    .uk-dotnav>*>* {
+      width: 12px;
+      height: 12px;
+    }
+
+    .uk-dotnav > #apiRunningDot>* {
+      background-color: #53C22B;
+    }
+
+    .uk-dotnav > #apiNotRunningDot>* {
+      background-color: #FF5A52;
+    }
   </style>
 </head>
 
 <body>
   <div id="app">
-
     <!-- Navbar -->
     <nav class="uk-navbar-container" uk-navbar>
       <div class="uk-navbar-left">
@@ -32,11 +44,20 @@
         <div class="uk-margin-left">
           <ul class="uk-navbar-nav" uk-switcher="connect: .pages">
             <li class="uk-active"><a href="#">Run</a></li>
-            <!-- TODO: Switch this back before committing -->
             <li><a href="#">Results</a></li>
           </ul>
         </div>
 
+      </div>
+
+      <!-- API running dots -->
+      <div class="uk-navbar-right">
+        <div class="uk-margin-right">
+          <ul class="uk-dotnav">
+            <li id="apiRunningDot" uk-tooltip="title: API is running; pos: left" v-if="apiRunning" class="uk-active"><a href="#">Active</a></li>
+            <li id="apiNotRunningDot" uk-tooltip="title: API is not running; pos: left" v-else class="uk-active"><a href="#">Active</a></li>
+          </ul>
+        </div>
       </div>
     </nav>
 
@@ -86,11 +107,60 @@
               VARTOOLS command
               <a @click="copyToClipboard(totalCommand)" uk-tooltip="Copy" class="uk-margin-small-left"
                 uk-icon="icon: copy"></a>
+              <a href="#help-modal" uk-toggle uk-tooltip="Help" class="uk-margin-small-left"
+                uk-icon="icon: info"></a>
               <a v-if="!commandLocked" @click="commandLocked = !commandLocked" uk-tooltip="Unlocked"
                 class="uk-margin-small-left" uk-icon="icon: unlock"></a>
               <a v-else @click="commandLocked = !commandLocked" uk-tooltip="Locked" class="uk-margin-small-left"
                 uk-icon="icon: lock"></a>
             </h4>
+
+            <!-- This is the modal -->
+            <div id="help-modal" uk-modal>
+              <div class="uk-modal-dialog uk-modal-body">
+                <h2 class="uk-modal-title">Help</h2>
+                <ul class="uk-list uk-list-divider">
+                  <li>
+                    <h4>
+                      Replacements
+                    </h4>
+                    <table class="uk-table">
+                      <caption></caption>
+                      <thead>
+                        <tr>
+                          <th>Pattern</th>
+                          <th>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>{infile}</code></td>
+                          <td>The input file for vartools</td>
+                        </tr>
+                        <tr>
+                          <td><code>{outdir}</code></td>
+                          <td>The output directory for vartools</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </li>
+
+                  <li>
+                    <i>
+                      Be sure to use the <code>-l</code> flag for input files rather than <code>-i</code>.
+                      Your vartools command should start with the following:
+                    </i>
+                    <pre>vartools -l {infile} ...</pre>
+                  </li>
+                </ul>
+
+
+                <p class="uk-text-right">
+                  <button class="uk-button uk-button-default uk-modal-close" type="button">Close</button>
+                </p>
+              </div>
+            </div>
+
             <textarea v-model="totalCommand" cols="30" rows="10" class="uk-textarea monospaced"></textarea>
             <div class="uk-margin">
               <button @click="run" class="uk-button uk-button-primary">

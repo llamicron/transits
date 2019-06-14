@@ -10,7 +10,7 @@ dependencies = [
 
 [[package]]
 name = "astrotools"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "csv 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",

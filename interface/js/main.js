@@ -34,12 +34,11 @@ let app = new Vue({
   data: {
     apiRunning: false,
     result: {},
-    // inputFile: "/Users/llamicron/Desktop/october.dat",
     inputFile: "",
     inputFiles: [],
     vartools: vartools,
     commandLocked: false,
-    totalCommand: "",
+    totalCommand: "vartools -l {infile} ",
     vartoolsOutput: "Nothing here yet... Run Vartools first",
     commands: [],
     flags: vartools.flags,
@@ -49,7 +48,7 @@ let app = new Vue({
 
   watch: {
     inputFile: function() {
-      this.totalCommand = this.parseTotalCommand();
+      // this.totalCommand = this.parseTotalCommand();
     },
 
     commands: {
@@ -95,8 +94,10 @@ let app = new Vue({
       get("http://localhost:8000/api/running", (result) => {
         if (result.status == "ok") {
           this.apiRunning = true;
+          return;
         }
-      })
+      });
+      this.apiRunning = false;
     },
 
     // Runs the vartools command
@@ -217,5 +218,9 @@ let app = new Vue({
     addEventListener('stop', () => {
       this.reIndexCommands();
     })
+
+    setInterval(() => {
+      this.isApiRunning();
+    }, 4000);
   }
 })

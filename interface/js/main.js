@@ -1,3 +1,7 @@
+// vartools -l {infile} -ascii -oneline -BLS q 0.01 0.1 0.1 2.7 100000 200 0 3 1 {outdir} 1 {outdir} 0 fittrap nobinnedrms ophcurve {outdir} -0.1 1.1 0.001
+// vartools -l {infile} -ascii -oneline -BLS q 0.01 0.1 0.1 2.0 100000 200 -6 3 1 {outdir} 1 {outdir} 0 fittrap nobinnedrms ophcurve {outdir} -0.1 1.1 0.001
+// vartools -l {infile} -ascii -oneline -BLS q 0.01 0.1 0.1 2.0 100000 200 -6 3 1 {outdir} 1 {outdir} 0 fittrap nobinnedrms ophcurve {outdir} -0.1 1.1 0.001 -MandelAgolTransit bls quad 0.3471 0.3180 1 1 1 1 0 0 1 0 0 0 0 1 {outdir}
+
 if (!Array.prototype.last) {
   Array.prototype.last = function () {
     return this[this.length - 1];

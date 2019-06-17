@@ -61,7 +61,7 @@ impl DataFormatter {
                                     .open(filename).unwrap();
 
             let mut buf = BufWriter::new(file);
-            writeln!(buf, "{},{},{}", data.mjd, data.mag, data.magerror)?;
+            writeln!(buf, "{}  {}  {}", data.mjd, data.mag, data.magerror)?;
         }
         self.write_index_file();
 

@@ -52,6 +52,8 @@ impl Vartools {
             self.success = false;
         }
 
+        println!("{:?}", self.cmd);
+
         self.success
     }
 }
